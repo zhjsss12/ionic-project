@@ -10,16 +10,31 @@
 
 <ion-content padding>
 
-  <h3>Welcome to your first Ionic app!</h3>
-
   <p>
-    This starter project is our way of helping you get a functional app running in record time.
+    <button ion-button color="primary" (click)="connectToRing()">连接手环</button>
   </p>
   <p>
-    Follow along on the tutorial section of the Ionic docs!
+    <button ion-button color="primary" (click)="connectToServer()">测试服务器</button>
   </p>
-  <p>
-    <button ion-button color="primary" menuToggle>Toggle Menu</button>
-  </p>
+  <ion-list>
+    <button ion-item *ngFor="let device of devices" (click)="deviceSelected(device)">
+      <h2>{{ device.name || 'Unnamed' }}</h2>
+      <p>{{ device.id }}</p>
+      <p>RSSI: {{ device.rssi }}</p>
+    </button>
+   </ion-list>
+   <form (ngSubmit)="connectToServer()">
+     <ion-list>
+       <ion-item>
+         <ion-label>Username</ion-label>
+         <ion-input [(ngModel)]="user.name" name="name" type="text" value=""></ion-input>
+       </ion-item>
+       <ion-item>
+         <ion-label>Password</ion-label>
+         <ion-input [(ngModel)]="user.password" name="password" type="password"></ion-input>
+       </ion-item>
+     </ion-list>
+     <button ion-button type="submit">Sign in</button>
+   </form>
 
 </ion-content>
