@@ -8,6 +8,18 @@
 </ion-header>
 
 <ion-content class="outer-content speaker-list">
+  <button ion-button full (click)="databaseInit()">
+      <ion-icon name="search">初始化</ion-icon>
+  </button>
+  <button ion-button full (click)="query()">
+      <ion-icon name="search">返回最大的ID</ion-icon>
+  </button>
+  <button ion-button full (click)="insert()">
+      <ion-icon name="search">插入</ion-icon>
+  </button>
+  <button ion-button full (click)="q()">
+      <ion-icon name="search">查询</ion-icon>
+  </button>
   <ion-list [virtualScroll]="speakers">
     <ion-grid fixed>
       <ion-row align-items-stretch>

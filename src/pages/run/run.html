@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>运动数据</ion-title>
+  </ion-navbar>
+
+   <ion-toolbar no-border-top>
+    <ion-segment [(ngModel)]="segment" (ionChange)="ionChange()">
+      <ion-segment-button value="7day">
+        最近7天
+      </ion-segment-button>
+      <ion-segment-button value="30day">
+        最近30天 
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content class="outer-content speaker-list">
+
+  <div [ngSwitch]="segment">
+    <ion-list *ngSwitchCase="'7day'">
+      <div id="container7"></div>
+    </ion-list>
+    <ion-list *ngSwitchCase="'30day'">
+      <div id="container30" ></div>
+    </ion-list>
+  </div>
+</ion-content>

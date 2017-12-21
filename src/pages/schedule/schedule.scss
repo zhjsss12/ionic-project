@@ -10,7 +10,110 @@ $categories: (
  documentation: #B16BE3,
  navigation: #6600CC,
 );
+// 线条总数
+$total: 37;
+// 每个线条相差的角度
+$angel: 360/($total - 1);
+.loading {
+    //background: black;
+    width: 80%;
+    height: 60%;
+    position: relative;
+    border-top: 2px;
+    margin: 0 auto;
+    #step {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 38%;
+        //left: 25%;
+        font-size: 35px;
+        font-family: 'Arial';
+        margin: 0 auto;
+        text-align:center;
+    }
+    #sleep {
+        position: absolute;;
+        top: 75%;
+        left: 0;
+        font-size: 22px;
+        font-family: 'Arial';
+        text-align:center;
+        line-height:5px;
+    }
+    #mood {
+        position: absolute;;
+        top: 75%;
+        right: 0;
+        font-size: 22px;
+        font-family: 'Arial';
+        text-align:center;
+        line-height:5px;
+    }
+    #info {
+        position: absolute;;
+        top: 48%;
+        width: 100%;
+        line-height:5px;
+        //left: 50%;
+        font-size: 13px;
+        font-family: 'Arial';
+        margin: 0 auto;
+        text-align:center;
+    }
+    .ring {
+      width: 60%;
+      height: 80%;
+      top: 43%;
+      position: relative;
+      margin: 0 auto;
+      .piece {
+          position: absolute;
+          display: block;
+          width: 100%;
+          height: 5px;
+          transform-origin: 50% 50%;
+          margin: 0 auto;
+          text-align:center;
+          &:before {
+              display: block;
+              content: "";
+              height: 50%;
+              width: 8%;
+              background: blue;
+          }
+          @for $i from 1 through $total {
+              &:nth-child(#{$i}) {
+                  transform: translate3d(0, -50%, 0) rotate(#{90 + $angel*($i - 1)}deg);
+                  opacity: 0.8;
+              }
+          }
+      }
+      .background {
+          position: absolute;
+          display: block;
+          width: 100%;
+          height: 5px;
+          transform-origin: 50% 50%;
+          margin: 0 auto;
+          text-align:center;
+          &:before {
+              display: block;
+              content: "";
+              height: 50%;
+              width: 8%;
+              background: blue;
+          }
+          @for $i from 1 through $total {
+              &:nth-child(#{$i}) {
+                  transform: translate3d(0, -50%, 0) rotate(#{90+$angel*($i - 1)}deg);
+                  opacity: 0.2;
+              }
+          }
+      }
+    }
 
+}
 @function auxiliary-categories() {
   @return map-remove($categories);
 }

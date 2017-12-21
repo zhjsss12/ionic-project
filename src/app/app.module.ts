@@ -9,6 +9,7 @@ import { HTTP } from '@ionic-native/http';
 import { IonicStorageModule } from '@ionic/storage';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { HttpModule } from '@angular/http';
+import { SQLite } from '@ionic-native/sqlite';
 
 import { HelloIonicPage } from '../pages/hello-ionic/hello-ionic';
 import { AboutPage } from '../pages/about/about';
@@ -25,10 +26,17 @@ import { SpeakerListPage } from '../pages/speaker-list/speaker-list';
 import { TabsPage } from '../pages/tabs-page/tabs-page';
 import { TutorialPage } from '../pages/tutorial/tutorial';
 import { SupportPage } from '../pages/support/support';
+import { PlanPage } from '../pages/plan/plan';
+import { SleepPage } from '../pages/sleep/sleep';
+import { RunPage } from '../pages/run/run';
+import { MoodPage } from '../pages/mood/mood';
+import { NotificationPage } from '../pages/notification/notification';
 
 import { ConferenceData } from '../providers/conference-data';
 import { UserData } from '../providers/user-data';
-
+import { databaseManager } from '../providers/databaseManager';
+import { bleManager } from '../providers/bleManager';
+import { httpManager } from '../providers/httpManager';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
@@ -49,7 +57,12 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     SpeakerListPage,
     TabsPage,
     TutorialPage,
-    SupportPage
+    SupportPage,
+    PlanPage,
+    NotificationPage,
+    SleepPage,
+    MoodPage,
+    RunPage
   ],
   imports: [
     BrowserModule,
@@ -68,7 +81,13 @@ import { SplashScreen } from '@ionic-native/splash-screen';
         { component: SupportPage, name: 'SupportPage', segment: 'support' },
         { component: LoginPage, name: 'LoginPage', segment: 'login' },
         { component: AccountPage, name: 'AccountPage', segment: 'account' },
-        { component: SignupPage, name: 'SignupPage', segment: 'signup' }
+        { component: SignupPage, name: 'SignupPage', segment: 'signup' },
+        { component: HelloIonicPage, name: 'HelloIonicPage', segment: 'hello-ionic' },
+        { component: PlanPage, name: 'PlanPage', segment: 'plan' },
+        { component: NotificationPage, name: 'NotificationPage', segment: 'notification' },
+        { component: SleepPage, name: 'SleepPage', segment: 'sleep' },
+        { component: MoodPage, name: 'MoodPage', segment: 'mood' },
+        { component: RunPage, name: 'RunPage', segment: 'run' }
       ]
     }),
     IonicStorageModule.forRoot()
@@ -90,7 +109,12 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     SpeakerListPage,
     TabsPage,
     TutorialPage,
-    SupportPage
+    SupportPage,
+    PlanPage,
+    NotificationPage,
+    SleepPage,
+    MoodPage,
+    RunPage
   ],
   providers: [
     StatusBar,
@@ -102,6 +126,10 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     InAppBrowser,
     BLE,
     File,
+    SQLite,
+    databaseManager,
+    bleManager,
+    httpManager,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })

@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
-
 import { Events } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
-
 
 @Injectable()
 export class UserData {
@@ -51,6 +49,7 @@ export class UserData {
 
   connectRing(device: string): void {
     this.storage.set(this.HAS_CONNECT_RING, true);
+    this.setDeviceNumber(device);
     this.events.publish('device:connect');
   }
 

@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-toolbar>
+    
+    <ion-title>
+      通知和提醒
+    </ion-title>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="outer-content">
+
+  <ion-list>
+    <ion-item>
+      <span item-start class="dot"></span>
+      <button ion-button clear icon-end (click)="jumpToSportNotice()" style="width:100%">
+        运动提醒
+        <ion-icon name='arrow-forward'></ion-icon>
+      </button>
+    </ion-item>
+    <ion-item>
+      <span item-start class="dot"></span>
+      <button ion-button clear icon-end (click)="jumpToClockNotice()" style="width:100%">
+        闹钟提醒
+        <ion-icon name='arrow-forward'></ion-icon>
+      </button>
+    </ion-item>
+
+  </ion-list>
+
+  <ion-list>
+    <ion-item *ngFor="let track of tracks" [attr.track]="track.name | lowercase">
+      <span item-start class="dot"></span>
+      <ion-label>{{track.name}}</ion-label>
+      <ion-toggle [(ngModel)]="track.isChecked" color="secondary"></ion-toggle>
+    </ion-item>
+  </ion-list>
+
+</ion-content>

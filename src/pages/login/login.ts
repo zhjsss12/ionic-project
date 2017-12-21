@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
 
-import { MenuController, NavController } from 'ionic-angular';
+import { MenuController, NavController, Nav } from 'ionic-angular';
 
 import { UserData } from '../../providers/user-data';
 
@@ -19,7 +19,7 @@ export class LoginPage {
   login: UserOptions = { op: '1', name: '', password: '' };
   submitted = false;
 
-  constructor(public navCtrl: NavController, public userData: UserData, private http: HTTP,  public menu: MenuController) { }
+  constructor(public navCtrl: NavController, public userData: UserData, private http: HTTP,  public menu: MenuController, public nav:Nav) { }
 
   onLogin(form: NgForm) {
     this.submitted = true;
@@ -32,7 +32,8 @@ export class LoginPage {
       //alert(data.headers);
 	  if(data.data == '2'){
 		    this.userData.login(this.login.name);
-		    this.navCtrl.push(TabsPage);
+		    // this.navCtrl.push(TabsPage);
+        this.nav.setRoot(TabsPage);
 	  }else{
         if(data.data == '0') {
             this.login.name = '';
@@ -64,8 +65,8 @@ export class LoginPage {
     this.menu.enable(false);
   }
 
-  ionViewDidLeave() {
-    // enable the root left menu when leaving the tutorial page
-    this.menu.enable(true);
-  }
+  // ionViewDidLeave() {
+  //   // enable the root left menu when leaving the tutorial page
+  //   this.menu.enable(true);
+  // }
 }

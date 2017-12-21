@@ -3,16 +3,7 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-
-    <ion-segment [(ngModel)]="segment" (ionChange)="updateSchedule()">
-      <ion-segment-button value="all">
-        All
-      </ion-segment-button>
-      <ion-segment-button value="favorites">
-        Favorites
-      </ion-segment-button>
-    </ion-segment>
-
+    <ion-title>首页</ion-title>
     <ion-buttons end>
       <button ion-button icon-only (click)="presentFilter()">
         <ion-icon ios="ios-options-outline" md="md-options"></ion-icon>
@@ -20,59 +11,84 @@
     </ion-buttons>
   </ion-navbar>
 
-  <ion-toolbar no-border-top>
-    <ion-searchbar color="primary"
-                   [(ngModel)]="queryText"
-                   (ionInput)="updateSchedule()"
-                   placeholder="Search">
-    </ion-searchbar>
-  </ion-toolbar>
 </ion-header>
 
 <ion-content>
+<!--
   <ion-refresher (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
+-->
 
-  <ion-list #scheduleList [hidden]="shownSessions === 0">
+<div class="loading" id="top">
+  <div id="step">{{ step }}步</div>
+  <div class="ring">
+    <div class="piece" *ngFor="let i of steps"></div>
+    <div class="background" *ngFor="let i of targets"></div>
+  </div>
+  <div id="sleep">
+    <p>睡眠指数</p>
+    <p>{{ sleep }}</p>
+  </div>
+  <div id="mood">
+    <p>心情指数</p>
+    <p>{{ mood }}</p>
+  </div>
+  <div id="info">
+    <p>{{ pathLength }}km</p>
+    <p>{{ buring }}卡路里</p>
+  </div>
 
-    <ion-item-group *ngFor="let group of groups" [hidden]="group.hide">
+</div>
+  <ion-row style="">
+    <ion-col  text-center>
+      <button ion-button icon-only round>
+        <ion-icon name="logo-vimeo"></ion-icon>
+      </button>
+    </ion-col>
+    <ion-col  text-center>
+      <button ion-button icon-only round>
+        <ion-icon name="logo-twitter"></ion-icon>
+      </button>
+    </ion-col>
+    <ion-col  text-center>
+      <button ion-button icon-only round>
+        <ion-icon name="logo-facebook"></ion-icon>
+      </button>
+    </ion-col>
+    <ion-col  text-center>
+      <button ion-button icon-only round>
+        <ion-icon name="logo-vimeo"></ion-icon>
+      </button>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col  text-center>
+      学长说
+    </ion-col>
+    <ion-col  text-center>
+      清华帮
+    </ion-col>
+    <ion-col  text-center>
+      XXX
+    </ion-col>
+    <ion-col  text-center>
+      XXX
+    </ion-col>
+  </ion-row>
 
-      <ion-item-divider sticky>
-        <ion-label>
-          {{group.time}}
-        </ion-label>
-      </ion-item-divider>
-
-      <ion-item-sliding *ngFor="let session of group.sessions" #slidingItem [attr.track]="session.tracks[0] | lowercase" [hidden]="session.hide">
-
-        <button ion-item (click)="goToSessionDetail(session)">
-          <h3>{{session.name}}</h3>
-          <p>
-            {{session.timeStart}} &mdash;
-            {{session.timeEnd}}:
-            {{session.location}}
-          </p>
-        </button>
-
-        <ion-item-options>
-          <button ion-button color="favorite" (click)="addFavorite(slidingItem, session)" *ngIf="segment === 'all'">
-            Favorite
-          </button>
-          <button ion-button color="danger" (click)="removeFavorite(slidingItem, session, 'Remove Favorite')" *ngIf="segment === 'favorites'">
-            Remove
-          </button>
-        </ion-item-options>
-
-      </ion-item-sliding>
-
-    </ion-item-group>
-
-  </ion-list>
-
-  <ion-list-header [hidden]="shownSessions > 0">
-      No Sessions Found
-  </ion-list-header>
+  <ion-item>
+      <button ion-button clear><h3 style="font-size:20px">查看排名</h3></button>
+      <ion-badge item-end>12</ion-badge>
+  </ion-item>
+  <ion-item>
+    <button ion-button clear><h3 style="font-size:20px">查看目标</h3></button>
+    <ion-badge item-end>12</ion-badge>
+  </ion-item>
+  <ion-item>
+    <button ion-button clear><h3 style="font-size:20px" (click)="wowowo()">send</h3></button>
+    <ion-badge item-end>12</ion-badge>
+  </ion-item>
 
   <ion-fab bottom right #fab>
     <button ion-fab><ion-icon name="share"></ion-icon></button>

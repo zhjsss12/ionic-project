@@ -32,7 +32,7 @@ export class SignupPage {
       //alert(data.headers);
 	  if(data.data == '2'){
       this.userData.signup(this.signup.name);
-      this.navCtrl.push(TabsPage);
+      this.navCtrl.setRoot(TabsPage);
 	  }else{
         this.signup.name = '';
         this.signup.password = '';
