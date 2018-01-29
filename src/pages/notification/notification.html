@@ -1,11 +1,10 @@
 <ion-header>
-  <ion-toolbar>
-    
-    <ion-title>
-      通知和提醒
-    </ion-title>
-
-  </ion-toolbar>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>通知和提醒</ion-title>
+  </ion-navbar>
 </ion-header>
 
 <ion-content class="outer-content">
@@ -13,16 +12,16 @@
   <ion-list>
     <ion-item>
       <span item-start class="dot"></span>
-      <button ion-button clear icon-end (click)="jumpToSportNotice()" style="width:100%">
+      <button ion-button clear icon-end (click)="jumpToSportNotice()" style="width:100%; font:13px">
         运动提醒
-        <ion-icon name='arrow-forward'></ion-icon>
+        <ion-icon name='arrow-forward' style="margin-left:20px"></ion-icon>
       </button>
     </ion-item>
     <ion-item>
       <span item-start class="dot"></span>
-      <button ion-button clear icon-end (click)="jumpToClockNotice()" style="width:100%">
+      <button ion-button clear icon-end (click)="jumpToClockNotice()" style="width:100%; font:13px">
         闹钟提醒
-        <ion-icon name='arrow-forward'></ion-icon>
+        <ion-icon name='arrow-forward' style="margin-left:20px"></ion-icon>
       </button>
     </ion-item>
 

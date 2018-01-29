@@ -120,24 +120,5 @@ export class SpeakerListPage {
    } as ActionSheetOptions);
    actionSheet.present();
  }
- databaseInit(){
-   this.dm.databaseInit();
- }
- query(){
-   console.log(this.dm.queryBiggestId());
- }
- insert(){
-   let dc= new dataClass();
-   let str : string[]=['1','2','1','2','1','2','1','2','1','2','1','2','1'];
-
-   dc.setData(str);
-   dc.setId('7');
-   this.dm.insert(dc);
-   dc.setData(str);
-   dc.setId('9');
-   this.dm.insert(dc);
- }
- q(){
-   console.log(this.dm.query());
- }
+ 
 }

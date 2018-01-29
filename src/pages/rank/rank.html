@@ -1,0 +1,51 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>排行榜</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="outer-content speaker-list">
+  <div padding>
+  <ion-segment [(ngModel)]="rank" (ionChange)='ionChange()'>
+    <ion-segment-button value="step">
+      步数
+    </ion-segment-button>
+    <ion-segment-button value="sleep">
+      睡眠
+    </ion-segment-button>
+    <ion-segment-button value="mood">
+      心情
+    </ion-segment-button>
+  </ion-segment>
+</div>
+
+<div [ngSwitch]="rank" style="padding-left:15px; padding-right:15px">
+  <ion-list *ngSwitchCase="'step'">
+    <ion-item *ngFor="let user of users">
+        <ion-badge item-start>{{ user.rank }}</ion-badge>
+        <span>{{ user.name }}</span>
+        <ion-badge item-end clear>{{ user.step }}</ion-badge>
+    </ion-item>
+  </ion-list>
+
+  <ion-list *ngSwitchCase="'sleep'">
+    <ion-item *ngFor="let user of users">
+        <ion-badge item-start>{{ user.rank }}</ion-badge>
+        <span>{{ user.name }}</span>
+        <ion-badge item-end clear>{{ user.sleep }}</ion-badge>
+    </ion-item>
+  </ion-list>
+
+  <ion-list *ngSwitchCase="'mood'">
+    <ion-item *ngFor="let user of users">
+        <ion-badge item-start>{{ user.rank }}</ion-badge>
+        <span>{{ user.name }}</span>
+        <ion-badge item-end clear>{{ user.mood }}</ion-badge>
+    </ion-item>
+  </ion-list>
+</div>
+
+</ion-content>

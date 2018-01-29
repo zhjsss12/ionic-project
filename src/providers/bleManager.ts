@@ -10,9 +10,10 @@ export class bleManager {
   constructor(private ble: BLE) {}
 
   //请求运动和睡眠数据
-  requestSport(peripheral:any):Promise<any> {
+  requestSport(peripheral:any, day: number):Promise<any> {
+    console.log("request uint8");
     return new Promise((resolve,reject)=>{
-      this.ble.write(peripheral, 'fff0' , 'fff6', this.sportReq()).then(
+      this.ble.write(peripheral, 'fff0' , 'fff6', this.sportReq(day)).then(
         responseData => {
           resolve('OK');
         }
@@ -24,11 +25,11 @@ export class bleManager {
         });
     });
   }
-  sportReq() {
+  sportReq(day) {
     //[0x41,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x41]
     var array = new Uint8Array(16);
     array[0] = 0x43;
-    array[1] = 0x00;
+    array[1] = day;
     array[2] = 0x00;
     array[3] = 0x00;
     array[4] = 0x00;
@@ -42,8 +43,8 @@ export class bleManager {
     array[12] = 0x00;
     array[13] = 0x00;
     array[14] = 0x00;
-    array[15] = 0x43;
-
+    array[15] = array[0]+array[1];
+    console.log(array);
     return array.buffer;
   }
 
@@ -170,4 +171,113 @@ export class bleManager {
 
     return array.buffer;
   }
+
+  writeStep(peripheral:any, target: number):Promise<string> {
+    return new Promise((success, failure) => {
+      this.ble.write(peripheral, 'fff0' , 'fff6', this.setStepReq(target)).then(
+        responseData => {
+          success('OK');
+        }
+      ).catch(
+        error => {
+          failure(error);
+        }
+      );
+    });
+
+  }
+  setStepReq(target: number) {
+    var array = new Uint8Array(16);
+    array[0] = 0x0B;
+    array[1] = Math.floor(target/10000);
+    array[2] = Math.floor((target-Math.floor(target/10000))/100);
+    array[3] = target%100;
+    array[4] = 0x00;
+    array[5] = 0x00;
+    array[6] = 0x00;
+    array[7] = 0x00;
+    array[8] = 0x00;
+    array[9] = 0x00;
+    array[10] = 0x00;
+    array[11] = 0x00;
+    array[12] = 0x00;
+    array[13] = 0x00;
+    array[14] = 0x00;
+    array[15] = array[0]+array[1]+array[2]+array[3];
+    return array.buffer;
+  }
+
+  requestStep(peripheral:any):Promise<string> {
+    return new Promise((success, failure) => {
+      this.ble.write(peripheral, 'fff0' , 'fff6', this.stepReq()).then(
+        responseData => {
+          success('OK');
+        }
+      ).catch(
+        error => {
+          failure(error);
+        }
+      );
+    });
+
+  }
+  stepReq() {
+    var array = new Uint8Array(16);
+    array[0] = 0x4B;
+    array[1] = 0x00;
+    array[2] = 0x00;
+    array[3] = 0x00;
+    array[4] = 0x00;
+    array[5] = 0x00;
+    array[6] = 0x00;
+    array[7] = 0x00;
+    array[8] = 0x00;
+    array[9] = 0x00;
+    array[10] = 0x00;
+    array[11] = 0x00;
+    array[12] = 0x00;
+    array[13] = 0x00;
+    array[14] = 0x00;
+    array[15] = array[0];
+
+    return array.buffer;
+  }
+
+  // requestSetNoti(peripheral:any, state: boolean):Promise<string> {
+  //   return new Promise((success, failure) => {
+  //     this.ble.write(peripheral, 'fff0' , 'fff6', this.currentReq()).then(
+  //       responseData => {
+  //         success('OK');
+  //       }
+  //     ).catch(
+  //       error => {
+  //         failure(error);
+  //       }
+  //     );
+  //   });
+  //
+  // }
+  // setCallReq() {
+  //   //[0x41,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x41]
+  //   var array = new Uint8Array(16);
+  //   array[0] = 0x07;
+  //   array[1] = 0x00;
+  //   array[2] = 0x00;
+  //   array[3] = 0x00;
+  //   array[4] = 0x00;
+  //   array[5] = 0x00;
+  //   array[6] = 0x00;
+  //   array[7] = 0x00;
+  //   array[8] = 0x00;
+  //   array[9] = 0x00;
+  //   array[10] = 0x00;
+  //   array[11] = 0x00;
+  //   array[12] = 0x00;
+  //   array[13] = 0x00;
+  //   array[14] = 0x00;
+  //   array[15] = 0x07;
+  //
+  //   return array.buffer;
+  // }
+
 }

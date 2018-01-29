@@ -20,13 +20,41 @@
 </ion-header>
 
 <ion-content class="outer-content speaker-list">
-
-  <div [ngSwitch]="segment">
-    <ion-list *ngSwitchCase="'7day'">
-      <div id="container7"></div>
-    </ion-list>
-    <ion-list *ngSwitchCase="'30day'">
-      <div id="container30" ></div>
-    </ion-list>
-  </div>
+  <ion-list>
+    <div [ngSwitch]="segment">
+      <ion-list *ngSwitchCase="'7day'">
+        <div id="container7"></div>
+      </ion-list>
+      <ion-list *ngSwitchCase="'30day'">
+        <div id="container30" ></div>
+      </ion-list>
+    </div>
+<!--     <button ion-button full (click)="init()">
+      <ion-icon name="search">数据库初始化</ion-icon>
+    </button> -->
+    <button ion-button full (click)="change7()">
+      <ion-icon name="search">修改测试</ion-icon>
+    </button>
+    <button ion-button full (click)="query()">
+      <ion-icon name="search">查询全部</ion-icon>
+    </button>
+    <button ion-button full (click)="insert()">
+      <ion-icon name="search">插入部分数据</ion-icon>
+    </button>
+    <button ion-button full (click)="query2()">
+      <ion-icon name="search">查询完整度</ion-icon>
+    </button>
+    <ion-item>
+      <ion-label class = "statistic" > 7天平均</ion-label>
+      <ion-label class = "statistic" > 7天和</ion-label>
+      <ion-label class = "statistic" > 30天平均</ion-label> class = "statistic" 
+      <ion-label class = "statistic" > 30天和</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label class = "statistic" > {{average7}}</ion-label>
+      <ion-label class = "statistic" > {{sum7}}</ion-label>
+      <ion-label class = "statistic" > {{average7}}</ion-label>
+      <ion-label class = "statistic" > {{sum7}}</ion-label>
+    </ion-item>
+  </ion-list>
 </ion-content>

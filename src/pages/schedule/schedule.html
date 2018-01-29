@@ -67,22 +67,19 @@
       学长说
     </ion-col>
     <ion-col  text-center>
-      清华帮
+      心愿墙
     </ion-col>
     <ion-col  text-center>
-      XXX
-    </ion-col>
-    <ion-col  text-center>
-      XXX
+      开心生活
     </ion-col>
   </ion-row>
 
   <ion-item>
-      <button ion-button clear><h3 style="font-size:20px">查看排名</h3></button>
+      <button ion-button clear (click)="jumpToRank()"><h3 style="font-size:20px">查看排名</h3></button>
       <ion-badge item-end>12</ion-badge>
   </ion-item>
   <ion-item>
-    <button ion-button clear><h3 style="font-size:20px">查看目标</h3></button>
+    <button ion-button clear (click)="jumpToTarget()"><h3 style="font-size:20px">查看目标</h3></button>
     <ion-badge item-end>12</ion-badge>
   </ion-item>
   <ion-item>

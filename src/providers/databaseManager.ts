@@ -33,26 +33,37 @@ insert(dc:dataClass) : Promise<string>{
         list.push(+dc.data[i]);
       }
       console.log(list);
-      var date=list[1]+'-'+list[2]+'-';
+      var date='20'+list[1]+'-';
+      if (list[2]<10) {
+        date=date+'0'+list[2];
+      }
+      else {
+        date=date+list[2];
+      }
+      date+='-'
       if (list[3]<10) {
         date=date+'0'+list[3];
       }
       else {
         date=date+list[3];
       }
-
-      this.myAppDatabase.executeSql('insert into sports VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);',
-        [list[0],list[1],list[2],list[3],date,list[4],list[5],list[6],
-        list[7],list[8],list[9],list[10],list[11],list[12],list[13]])
-        .then(() => {
-          // console.log('Executed insert SQL');
-          resolve('Executed insert SQL');
-        })
-        .catch(e =>{
-          console.log(e);
-          reject(e);
-        });
-      });
+      this.myAppDatabase.executeSql('select * from sports where id = ' + dc.id + "; " ,[]).then(
+        (resultSet)=>{
+          if( resultSet.rows.length ==0 ){
+            this.myAppDatabase.executeSql('insert into sports VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);',
+              [list[0],list[1],list[2],list[3],date,list[4],list[5],list[6],
+              list[7],list[8],list[9],list[10],list[11],list[12],list[13]])
+              .then(() => {
+                resolve('Executed insert SQL');
+              })
+              .catch(e =>{
+                reject(e);
+              });
+          }
+        }).catch(
+           e=> {reject(e);}
+         );
+    });
   }
 //返回一个resultSet：obj
 //遍历时这么写就好
@@ -70,7 +81,7 @@ query(): Promise<any>{
       .then(
           (resultSet) => {
             console.log(typeof resultSet);
-            for (var i=0 ; i<resultSet.rows.length;i++) {
+            for ( var i=0 ; i<resultSet.rows.length;i++) {
                 console.log(' for loop i = ', i);
                 var x= resultSet.rows.item(i);
                 var listAtr=[];
@@ -91,54 +102,66 @@ query(): Promise<any>{
       });
   });
 }
-//返回最大的id
-queryBiggestId() :Promise<string>{
-  return new Promise((resolve,reject)=>{
-    this.myAppDatabase.executeSql('select max(id) from sports ;',{})
+//查询某一天的数据是否完整
+//返回1表示完整，0表示不完整
+//输入一个-6~0的number，0表示今天，-6表示6天前
+  queryDataFull(num: number) :Promise<number>{
+    return new Promise((resolve,reject)=>{
+      var sql= "select count(*) from sports where datee = date('now', '"+num+" day') ;";
+      console.log("databaseManager.ts queryDataFull sql : "+sql);
+      this.myAppDatabase.executeSql(sql,{})
       .then(
-        (resultSet) =>{
-          this.ans=resultSet.rows.item(0)['max(id)'];
-          resolve(this.ans.toString());
-          // console.log(this.ans.toString);
-          // console.log(typeof this.ans);
-        }
-      )
-      .catch(e => {
-        console.log(e);
-        reject(e);
-      });
-  });
-}
+          (resultSet) => {
+            // console.log('length ' + resultSet.rows.length);
+            // for ( var i=0 ; i<resultSet.rows.length;i++) {
+            //     console.log(' for loop i = ', i);
+            //     var x= resultSet.rows.item(i);
+            //     var listAtr=[];
+            //     var listData=[];
+            //     for (var j in x) {
+            //       listAtr.push(j);
+            //       listData.push(x[j]);
+            //     }
+            //     console.log(listAtr);
+            //     console.log(listData);
+            // }
+            var count=resultSet.rows.item(0)['count(*)']
+            if (count == 96) {
+              resolve(1);
+            }
+            else {
+              resolve(0);
+            }
+          })
+        .catch(e => {
+          reject(e);
+        });
+    });
+  }
 //返回某个属性最近几天的数值
 //返回一个resultSet：obj
 //例如[datee,sum(DD)] = ["2017-12-16",4567]
 //遍历直接仿照函数里面写的就好
-
-  queryLastAse(num: number , aspect:string, type :string) : Promise<any>{
+  queryLastAse(num: number , aspect:string[], type :string) : Promise<any>{
+    var q:string="";
+    for (var i in aspect) {
+      console.log(aspect[i])
+      q=q+" , sum(" +aspect[i]+ ")"
+    }
     return new Promise((resolve,reject)=>{
       var sql;
       if (type == '0') {
-        sql= "select datee,sum("+aspect+") from ( select * from sports where EE = 0 and datee between date('now','-"+num+" day') and date('now') ) group by datee order by datee asc;";
+        sql= "select datee " +q+"from ( select * from sports where EE = 0 and datee between date('now','-"+num+" day') and date('now') ) group by datee order by datee asc;";
       }
       else {
-        sql= "select datee,sum("+aspect+") from ( select * from sports where EE != 0 and datee between date('now','-"+num+" day') and date('now') ) group by datee order by datee asc;";
+        sql= "select datee " +q+"from ( select * from sports where EE != 0 and datee between date('now','-"+num+" day') and date('now') ) group by datee order by datee asc;";
       }
-      console.log(sql);
+      console.log("databaseManager.ts queryLastAse sql "+sql);
       this.myAppDatabase.executeSql(sql,[])
         .then(
           (resultSet) => {
             console.log('sql resultSet.length : '+resultSet.rows.length);
-            for (var i=0 ; i<resultSet.rows.length;i++) {
-              var x= resultSet.rows.item(i);
-              var listAtr=[];
-              var listData=[];
-              for (var j in x) {
-                listAtr.push(j);
-                listData.push(x[j]);
-              }
-              console.log(listAtr);
-              console.log(listData);
-            }
+            
             console.log(resultSet);
             resolve(resultSet);
           })
@@ -147,6 +170,29 @@ queryBiggestId() :Promise<string>{
           reject(e);
         }
       );
+    });
+  }
+//查询睡眠信息
+  querySleep(strYesterday: string, strToday : string): Promise <any>{
+    return new Promise((resolve,reject)=>{
+      this.sqlite.create({
+        name: 'data.db',
+        location: 'default'
+      }).then((db: SQLiteObject) => {
+        var sql = "select id ,FF + GG + HH + II +JJ +KK+ LL +MM from sports where (id < "+ strToday + "48 and id> " + strYesterday + "47);";
+        console.log("databaseManager.ts sql " + sql);
+        db.executeSql(sql,[])
+          .then(
+            (resultSet) => {
+              console.log('sql resultSet.length : '+resultSet.rows.length);
+              resolve(resultSet);
+            })
+          .catch(e =>{
+            console.log(e);
+            reject(e);
+          }
+        );
+      }).catch(e => console.log(e));
     });
   }
 }

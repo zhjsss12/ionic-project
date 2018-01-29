@@ -3,8 +3,8 @@ import { Component } from '@angular/core';
 import { AlertController, NavController } from 'ionic-angular';
 
 import { UserData } from '../../providers/user-data';
-
-
+import { HTTP } from '@ionic-native/http';
+import { UserOptions } from '../../interfaces/user-options';
 @Component({
   selector: 'page-account',
   templateUrl: 'account.html'
@@ -12,7 +12,7 @@ import { UserData } from '../../providers/user-data';
 export class AccountPage {
   username: string;
 
-  constructor(public alertCtrl: AlertController, public nav: NavController, public userData: UserData) {
+  constructor(public alertCtrl: AlertController, public nav: NavController, public userData: UserData, private http: HTTP) {
 
   }
 
@@ -58,6 +58,35 @@ export class AccountPage {
 
   changePassword() {
     console.log('Clicked to change password');
+    let alert = this.alertCtrl.create({
+      title: 'Change Password',
+      buttons: [
+        'Cancel'
+      ]
+    });
+    alert.addInput({
+      label: '请输入原密码',
+      name: 'oldPassword'
+    });
+    alert.addInput({
+      label: '请输入新密码',
+      name: 'newPassword'
+    });
+    alert.addButton({
+      text: 'Ok',
+      handler: (data: any) => {
+        var login: UserOptions = { op: '1', name: this.username, password: data.oldPassword };
+        this.http.post('http://120.26.131.179:80/login', {login}, {}).then(data => {
+  	       if(data.data != '2'){
+  		         //不成功
+  	       }
+  	    }).catch(error => {
+            console.log(error);
+        });
+      }
+    });
+
+    alert.present();
   }
 
   logout() {

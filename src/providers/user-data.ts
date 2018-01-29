@@ -8,6 +8,11 @@ export class UserData {
   HAS_LOGGED_IN = 'hasLoggedIn';
   HAS_SEEN_TUTORIAL = 'hasSeenTutorial';
   HAS_CONNECT_RING = 'hasConnectRing';
+  // HAS_SET_STEP_TARGET = 'hasSetStepTarget';
+  // HAS_UPLOAD = 'hasUpload';
+  HAS_SET_NOTICALL = 'hasSetNotiCall';
+  HAS_SET_NOTIQQ = 'hasSetNotiQQ';
+  HAS_SET_NOTIWECHAT = 'hasSetNotiWechat';
 
   constructor(
     public events: Events,
@@ -71,23 +76,149 @@ export class UserData {
 
   setUsername(username: string): void {
     this.storage.set('username', username);
-  };
+  }
 
   getUsername(): Promise<string> {
     return this.storage.get('username').then((value) => {
       return value;
     });
-  };
+  }
 
   hasLoggedIn(): Promise<boolean> {
     return this.storage.get(this.HAS_LOGGED_IN).then((value) => {
       return value === true;
     });
-  };
+  }
 
   checkHasSeenTutorial(): Promise<string> {
     return this.storage.get(this.HAS_SEEN_TUTORIAL).then((value) => {
       return value;
     });
-  };
+  }
+
+  setStepTarget(step: number): void {
+    this.storage.set('stepTarget', step);
+  }
+
+  setTimeTarget(time: number): void {
+    this.storage.set('timeTarget', time);
+  }
+
+  setcaloriesTarget(calo: number): void {
+    this.storage.set('caloTarget', calo);
+  }
+
+  setdistTarget(dist: number): void {
+    this.storage.set('distTarget', dist);
+  }
+
+  getStepTarget(): Promise<number> {
+    return this.storage.get('stepTarget').then((value) => {
+      return value;
+    });
+  }
+
+  getTimeTarget(): Promise<number> {
+    return this.storage.get('timeTarget').then((value) => {
+      return value;
+    });
+  }
+
+  getcaloriesTarget(): Promise<number> {
+    return this.storage.get('caloTarget').then((value) => {
+      return value;
+    });
+  }
+
+  getdistTarget(): Promise<number> {
+    return this.storage.get('distTarget').then((value) => {
+      return value;
+    });
+  }
+
+  // checkHasSetStepTarget(): Promise<string> {
+  //   return this.storage.get(this.HAS_SET_STEP_TARGET).then((value) => {
+  //     return value;
+  //   });
+  // };
+
+  setUpdateTime(date: Date): void {
+    this.storage.set('UpdateTime', date);
+  }
+
+  getLastUpdateTime(): Promise<Date> {
+    return this.storage.get('UpdateTime').then((value) => {
+      return value;
+    });
+  }
+
+  setStepShow(step: number): void {
+    this.storage.set('StepShow', step);
+  }
+
+  getLastStepShow(): Promise<number> {
+    return this.storage.get('StepShow').then((value) => {
+      return value;
+    });
+  }
+
+  setNotiCall(open: boolean): void {
+    this.storage.set('NotiCall', open);
+  }
+
+  getNotiCall(): Promise<boolean> {
+    return this.storage.get('NotiCall').then((value) => {
+      return value;
+    });
+  }
+
+  setNotiWeChat(open: boolean): void {
+    this.storage.set('NotiWeChat', open);
+  }
+
+  getNotiWeChat(): Promise<boolean> {
+    return this.storage.get('NotiWeChat').then((value) => {
+      return value;
+    });
+  }
+
+  setNotiQQ(open: boolean): void {
+    this.storage.set('NotiQQ', open);
+  }
+
+  getNotiQQ(): Promise<boolean> {
+    return this.storage.get('NotiQQ').then((value) => {
+      return value;
+    });
+  }
+
+  setNotiCallBle(hasSet: boolean) {
+    this.storage.set(this.HAS_SET_NOTICALL, hasSet);
+  }
+
+  getHasSetNotiCallBle(): Promise<boolean>{
+    return this.storage.get(this.HAS_SET_NOTICALL).then((value) => {
+      return value;
+    });
+  }
+
+  setNotiQQBle(hasSet: boolean) {
+    this.storage.set(this.HAS_SET_NOTIQQ, hasSet);
+  }
+
+  getHasSetNotiQQBle(): Promise<boolean>{
+    return this.storage.get(this.HAS_SET_NOTIQQ).then((value) => {
+      return value;
+    });
+  }
+
+  setNotiWeChatBle(hasSet: boolean) {
+    this.storage.set(this.HAS_SET_NOTIWECHAT, hasSet);
+  }
+
+  getHasSetNotiWeChatBle(): Promise<boolean>{
+    return this.storage.get(this.HAS_SET_NOTIWECHAT).then((value) => {
+      return value;
+    });
+  }
 }

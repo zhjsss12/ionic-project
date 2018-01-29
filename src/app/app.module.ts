@@ -17,6 +17,7 @@ import { PopoverPage } from '../pages/about-popover/about-popover';
 import { AccountPage } from '../pages/account/account';
 import { LoginPage } from '../pages/login/login';
 import { MapPage } from '../pages/map/map';
+import { RankPage } from '../pages/rank/rank';
 import { SchedulePage } from '../pages/schedule/schedule';
 import { ScheduleFilterPage } from '../pages/schedule-filter/schedule-filter';
 import { SessionDetailPage } from '../pages/session-detail/session-detail';
@@ -27,6 +28,7 @@ import { TabsPage } from '../pages/tabs-page/tabs-page';
 import { TutorialPage } from '../pages/tutorial/tutorial';
 import { SupportPage } from '../pages/support/support';
 import { PlanPage } from '../pages/plan/plan';
+import { TargetPage } from '../pages/target/target';
 import { SleepPage } from '../pages/sleep/sleep';
 import { RunPage } from '../pages/run/run';
 import { MoodPage } from '../pages/mood/mood';
@@ -62,7 +64,9 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     NotificationPage,
     SleepPage,
     MoodPage,
-    RunPage
+    RunPage,
+    RankPage,
+    TargetPage
   ],
   imports: [
     BrowserModule,
@@ -87,7 +91,9 @@ import { SplashScreen } from '@ionic-native/splash-screen';
         { component: NotificationPage, name: 'NotificationPage', segment: 'notification' },
         { component: SleepPage, name: 'SleepPage', segment: 'sleep' },
         { component: MoodPage, name: 'MoodPage', segment: 'mood' },
-        { component: RunPage, name: 'RunPage', segment: 'run' }
+        { component: RunPage, name: 'RunPage', segment: 'run' },
+        { component: RankPage, name: 'RankPage', segment: 'rank' },
+        { component: TargetPage, name: 'TargetPage', segment: 'target'}
       ]
     }),
     IonicStorageModule.forRoot()
@@ -114,7 +120,9 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     NotificationPage,
     SleepPage,
     MoodPage,
-    RunPage
+    RunPage,
+    RankPage,
+    TargetPage
   ],
   providers: [
     StatusBar,

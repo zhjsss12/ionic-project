@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>目标</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content class="outer-content speaker-list">
+  <h3>目标：</h3>
+  <ion-grid>
+    <ion-row>
+      <ion-col col-6><div>步数：{{stepTarget}}</div></ion-col>
+      <ion-col col-6><div>时间：{{timeTarget}}</div></ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col col-6><div>卡路里：{{caloTarget}}</div></ion-col>
+      <ion-col col-6><div>距离：{{distTarget}}</div></ion-col>
+    </ion-row>
+  </ion-grid>
+  <div id="targetFinished"></div>
+</ion-content>
