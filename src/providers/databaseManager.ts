@@ -179,7 +179,7 @@ query(): Promise<any>{
         name: 'data.db',
         location: 'default'
       }).then((db: SQLiteObject) => {
-        var sql = "select id ,FF + GG + HH + II +JJ +KK+ LL +MM from sports where (id < "+ strToday + "48 and id> " + strYesterday + "47);";
+        var sql = "select id ,FF + GG + HH + II +JJ +KK+ LL +MM from sports where EE != 0 and (id < "+ strToday + "48 and id> " + strYesterday + "47);";
         console.log("databaseManager.ts sql " + sql);
         db.executeSql(sql,[])
           .then(

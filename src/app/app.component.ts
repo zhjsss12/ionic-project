@@ -23,6 +23,7 @@ import { databaseManager } from '../providers/databaseManager';
 import { bleManager } from '../providers/bleManager';
 import { BLE } from '@ionic-native/ble';
 import { Injectable } from '@angular/core';
+import { GroupListPage } from '../pages/group-list/group-list';
 export interface PageInterface {
   title: string;
   name: string;
@@ -49,7 +50,8 @@ export class MyApp {
   appPages: PageInterface[] = [
     { title: '个人信息', name: 'AccountPage', component: AccountPage, icon: 'person' },
     { title: '个人计划', name: 'PlanPage', component: PlanPage, icon: 'contacts' },
-    { title: '通知提醒', name: 'NotificationPage', component: NotificationPage, icon: 'map' }
+    { title: '通知提醒', name: 'NotificationPage', component: NotificationPage, icon: 'map' },
+    { title: '社区', name: 'GroupListPage', component: GroupListPage, icon: 'map' }
     // { title: 'About', name: 'TabsPage', component: TabsPage, tabComponent: AboutPage, index: 3, icon: 'information-circle' },
     // { title: 'Hello', name: 'TabsPage', component: TabsPage, tabComponent: HelloIonicPage, index: 4, icon: 'hello' }
   ];
@@ -68,6 +70,7 @@ export class MyApp {
   ];
   username:string ="";
   statusMessage: string;
+  userPic: string = "http://www.gravatar.com/avatar?d=mm&s=140";
 
   constructor(
     public platform: Platform,
@@ -92,6 +95,9 @@ export class MyApp {
           this.userData.getUsername().then((username) => {
             this.username = username;
           });
+          this.userData.getUserPic().then((value) => {
+            this.userPic = value;
+          });
           this.rootPage = TabsPage;
         } else {
           setTimeout(() => {
@@ -101,6 +107,7 @@ export class MyApp {
             this.userData.setStepTarget(5000);
             this.userData.setStepShow(0);
             this.userData.setUpdateTime(new Date("1970-1-1 0:0:0"));
+            this.userData.setUserPic("http://www.gravatar.com/avatar?d=mm&s=140");
           }, 3000);
           console.log('alababa')
           this.rootPage = LoginPage;
@@ -133,7 +140,13 @@ export class MyApp {
     this.listenToLoginEvents();
     // this.listenToRingEvent();
     this.listenToNote();
-
+    this.listenToPic();
+    this.platform.ready().then(() => {
+      // Okay, so the platform is ready and our plugins are available.
+      // Here you can do any higher level native things you might need.
+      this.statusBar.styleDefault();
+      this.splashScreen.hide();
+    });
   }
 
   initializeApp() {
@@ -559,6 +572,14 @@ export class MyApp {
       //       this.userData.setNotiWeChatBle(false);
       //     });
       //   });
+      });
+    });
+  }
+
+  listenToPic(){
+    this.events.subscribe('picHasChanged', () => {
+      this.userData.getUserPic().then((value) => {
+        this.userPic = value;
       });
     });
   }

@@ -8,11 +8,6 @@ export class UserData {
   HAS_LOGGED_IN = 'hasLoggedIn';
   HAS_SEEN_TUTORIAL = 'hasSeenTutorial';
   HAS_CONNECT_RING = 'hasConnectRing';
-  // HAS_SET_STEP_TARGET = 'hasSetStepTarget';
-  // HAS_UPLOAD = 'hasUpload';
-  HAS_SET_NOTICALL = 'hasSetNotiCall';
-  HAS_SET_NOTIQQ = 'hasSetNotiQQ';
-  HAS_SET_NOTIWECHAT = 'hasSetNotiWechat';
 
   constructor(
     public events: Events,
@@ -81,6 +76,18 @@ export class UserData {
   getUsername(): Promise<string> {
     return this.storage.get('username').then((value) => {
       return value;
+    });
+  }
+
+  setUserPic(picUrl: string): void {
+    this.storage.set('userPic', picUrl);
+  }
+
+  getUserPic(): Promise<string> {
+    return this.storage.get('userPic').then((value) => {
+      return value;
+    }).catch((error) => {
+      return error;
     });
   }
 
@@ -162,6 +169,32 @@ export class UserData {
     });
   }
 
+  setSleepShow(step: number): void {
+    this.storage.set('SleepShow', step);
+  }
+
+  getLastSleepShow(): Promise<number> {
+    return this.storage.get('SleepShow').then((value) => {
+      return value;
+    });
+  }
+
+  setMoodShow(step: number): void {
+    this.storage.set('MoodShow', step);
+  }
+
+  getLastMoodShow(): Promise<number> {
+    return this.storage.get('MoodShow').then((value) => {
+      return value;
+    });
+  }
+
+  // getCurStatus(): Promise<string> {
+  //   return this.storage.get('username').then((name) => {
+  //
+  //   });
+  // }
+
   setNotiCall(open: boolean): void {
     this.storage.set('NotiCall', open);
   }
@@ -192,33 +225,15 @@ export class UserData {
     });
   }
 
-  setNotiCallBle(hasSet: boolean) {
-    this.storage.set(this.HAS_SET_NOTICALL, hasSet);
+  setNoti(open: boolean): void {
+    this.storage.set('Noti', open);
   }
 
-  getHasSetNotiCallBle(): Promise<boolean>{
-    return this.storage.get(this.HAS_SET_NOTICALL).then((value) => {
+  getNoti(): Promise<boolean> {
+    return this.storage.get('Noti').then((value) => {
       return value;
     });
   }
 
-  setNotiQQBle(hasSet: boolean) {
-    this.storage.set(this.HAS_SET_NOTIQQ, hasSet);
-  }
 
-  getHasSetNotiQQBle(): Promise<boolean>{
-    return this.storage.get(this.HAS_SET_NOTIQQ).then((value) => {
-      return value;
-    });
-  }
-
-  setNotiWeChatBle(hasSet: boolean) {
-    this.storage.set(this.HAS_SET_NOTIWECHAT, hasSet);
-  }
-
-  getHasSetNotiWeChatBle(): Promise<boolean>{
-    return this.storage.get(this.HAS_SET_NOTIWECHAT).then((value) => {
-      return value;
-    });
-  }
 }

@@ -1,6 +1,6 @@
 import { Component, ViewChild , NgZone} from '@angular/core';
 import { BLE } from '@ionic-native/ble';
-
+import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { Events, AlertController, App, FabContainer, ItemSliding, List, ModalController, NavController, ToastController, LoadingController, Refresher } from 'ionic-angular';
 
 /*
@@ -76,9 +76,14 @@ export class SchedulePage {
     private bm:bleManager,
     public userdata: UserData,
     private ble:BLE,
-    private hm: httpManager
+    private hm: httpManager,
+    private iab: InAppBrowser
+    // private themeableBrowser: ThemeableBrowser
   ) {}
-
+  ionViewWillEnter(){
+    this.db.databaseInit();
+    console.log('进入了 首 页面');
+  }
   ionViewDidLoad() {
     for(let i=0; i<36; i++){
       this.targets.push(0);
@@ -149,6 +154,19 @@ export class SchedulePage {
                   error => this.scanError(error)
                 );
                 setTimeout(this.setStatus.bind(this), 5000, 'Scan complete');
+                setTimeout(() => {
+                  this.ble.isConnected(value).then((value) => {
+
+                  }).catch((value) => {
+                    this.events.publish('transfarOver');
+                  //   let toast = this.toastCtrl.create({
+                  //     message: '连接手环失败',
+                  //     duration: 500
+                  //   });
+                  //   toast.present();
+                  });
+                  loader.dismiss();
+                }, 5000);
                 // this.loopConnect(value);
               }
             ).catch(
@@ -156,9 +174,12 @@ export class SchedulePage {
             );
           }, 10);
 
-          setTimeout(() => {
-            loader.dismiss();
-          }, 10000);
+          this.events.subscribe('transfarOver', () => {
+            setTimeout(() => {
+              loader.dismiss();
+              console.log('Finished');
+            },200);
+          });
 
         } else {
           this.connectToRing();
@@ -177,143 +198,6 @@ export class SchedulePage {
     }, 1000);
 
   }
-  //
-  // loopConnect(id){
-  //   console.log("loop now...");
-  //   this.ble.isConnected(id).then(
-  //     (id) => {this.onConnected(id);}
-  //   ).catch(
-  //     (id) => this.loopConnect(id)
-  //   );
-  // }
-  // loop() {
-  //     if(!this.finish){
-  //       var num = document.getElementById('step');
-  //       var st = +num;
-  //       document.getElementById('step').innerHTML = st+"步";
-  //       console.log(st+' step');
-  //     }else{
-  //       return;
-  //     }
-  //     setTimeout(this.loop(),100);
-  // }
-
-  // updateSchedule() {
-  //   // Close any open sliding items when the schedule updates
-  //   this.scheduleList && this.scheduleList.closeSlidingItems();
-  //
-  //   this.confData.getTimeline(this.dayIndex, this.queryText, this.excludeTracks, this.segment).subscribe((data: any) => {
-  //     this.shownSessions = data.shownSessions;
-  //     this.groups = data.groups;
-  //   });
-  // }
-
-  // presentFilter() {
-  //   let modal = this.modalCtrl.create(ScheduleFilterPage, this.excludeTracks);
-  //   modal.present();
-  //
-  //   modal.onWillDismiss((data: any[]) => {
-  //     if (data) {
-  //       this.excludeTracks = data;
-  //       this.updateSchedule();
-  //     }
-  //   });
-  //
-  // }
-
-  // goToSessionDetail(sessionData: any) {
-  //   // go to the session detail page
-  //   // and pass in the session data
-  //
-  //   this.navCtrl.push(SessionDetailPage, { sessionId: sessionData.id, name: sessionData.name });
-  // }
-
-  // addFavorite(slidingItem: ItemSliding, sessionData: any) {
-  //
-  //   if (this.user.hasFavorite(sessionData.name)) {
-  //     // woops, they already favorited it! What shall we do!?
-  //     // prompt them to remove it
-  //     this.removeFavorite(slidingItem, sessionData, 'Favorite already added');
-  //   } else {
-  //     // remember this session as a user favorite
-  //     this.user.addFavorite(sessionData.name);
-  //
-  //     // create an alert instance
-  //     let alert = this.alertCtrl.create({
-  //       title: 'Favorite Added',
-  //       buttons: [{
-  //         text: 'OK',
-  //         handler: () => {
-  //           // close the sliding item
-  //           slidingItem.close();
-  //         }
-  //       }]
-  //     });
-  //     // now present the alert on top of all other content
-  //     alert.present();
-  //   }
-  //
-  // }
-  //
-  // removeFavorite(slidingItem: ItemSliding, sessionData: any, title: string) {
-  //   let alert = this.alertCtrl.create({
-  //     title: title,
-  //     message: 'Would you like to remove this session from your favorites?',
-  //     buttons: [
-  //       {
-  //         text: 'Cancel',
-  //         handler: () => {
-  //           // they clicked the cancel button, do not remove the session
-  //           // close the sliding item and hide the option buttons
-  //           slidingItem.close();
-  //         }
-  //       },
-  //       {
-  //         text: 'Remove',
-  //         handler: () => {
-  //           // they want to remove this session from their favorites
-  //           this.user.removeFavorite(sessionData.name);
-  //           this.updateSchedule();
-  //
-  //           // close the sliding item and hide the option buttons
-  //           slidingItem.close();
-  //         }
-  //       }
-  //     ]
-  //   });
-  //   // now present the alert on top of all other content
-  //   alert.present();
-  // }
-  //
-  // openSocial(network: string, fab: FabContainer) {
-  //   let loading = this.loadingCtrl.create({
-  //     content: `Posting to ${network}`,
-  //     duration: (Math.random() * 1000) + 500
-  //   });
-  //   loading.onWillDismiss(() => {
-  //     fab.close();
-  //   });
-  //   loading.present();
-  // }
-  //
-  // doRefresh(refresher: Refresher) {
-  //   this.confData.getTimeline(this.dayIndex, this.queryText, this.excludeTracks, this.segment).subscribe((data: any) => {
-  //     this.shownSessions = data.shownSessions;
-  //     this.groups = data.groups;
-  //
-  //     // simulate a network request that would take longer
-  //     // than just pulling from out local json file
-  //     setTimeout(() => {
-  //       refresher.complete();
-  //
-  //       const toast = this.toastCtrl.create({
-  //         message: 'Sessions have been updated.',
-  //         duration: 3000
-  //       });
-  //       toast.present();
-  //     }, 1000);
-  //   });
-  // }
 
   connectToRing() {
     // the root left menu should be disabled on the tutorial page
@@ -554,7 +438,15 @@ export class SchedulePage {
                     let temp = Math.floor(data[i]/16)*10 + data[i]%16;
                     d.push(temp);
                   }else{
-                    d.push(data[i]);
+                    if(i == 8 || i == 10 || i == 12 || i == 14){
+                      if(data[i]>0x20){
+                        d.push(0);
+                      }else{
+                        d.push(data[i]);
+                      }
+                    }else{
+                      d.push(data[i]);
+                    }
                   }
                 }
                 dc.setId(d[3]+d[2]*100+d[1]*10000+d[0]*1000000);
@@ -591,14 +483,36 @@ export class SchedulePage {
       },(error)=>{
         console.log('write ble time fail '+"-- "+error);
       });
+      this.userdata.getNoti().then((value) => {
+        if(!value){
+          this.userdata.getNotiCall().then((call) => {
+            this.userdata.getNotiWeChat().then((wechat) => {
+              this.userdata.getNotiQQ().then((qq) => {
+                this.bm.requestSetNoti(this.peripheral.id, call, wechat, qq).then((success)=>{
+                  console.log('set noti success');
+                  this.userdata.setNoti(true);
+                },(error)=>{
+                  console.log('set noti fail '+"-- "+error);
+                  this.userdata.setNoti(false);
+                });
+              });
+            });
+          });
+
+        }
+      });
+      var process = 0;
       this.db.queryDataFull(0).then((value) => {
         if(value == 0){
+          process = 1;
           console.log('request today');
           this.bm.requestSport(this.peripheral.id, Math.abs(0)).then((success)=>{
             console.log('request ble data success'+'  '+0);
           },(error)=>{
             console.log('request ble data fail '+"-- "+error);
           });
+        }else{
+          this.events.publish('finish'+((new Date(new Date().getTime() - 86400000*0)).getMonth()+1)+'-'+(new Date(new Date().getTime() - 86400000*0)).getDate());
         }
       });
       console.log('listen to :'+'finish'+((new Date(new Date().getTime() - 86400000*0)).getMonth()+1)+'-'+(new Date(new Date().getTime() - 86400000*0)).getDate());
@@ -610,6 +524,8 @@ export class SchedulePage {
             },(error)=>{
               console.log('request ble data fail '+"-- "+error);
             });
+          }else{
+            this.events.publish('finish'+((new Date(new Date().getTime() - 86400000*1)).getMonth()+1)+'-'+(new Date(new Date().getTime() - 86400000*1)).getDate());
           }
         });
       });
@@ -624,6 +540,8 @@ export class SchedulePage {
             },(error)=>{
               console.log('request ble data fail '+"-- "+error);
             });
+          }else{
+            this.events.publish('finish'+((new Date(new Date().getTime() - 86400000*2)).getMonth()+1)+'-'+(new Date(new Date().getTime() - 86400000*2)).getDate());
           }
         });
       });
@@ -638,6 +556,8 @@ export class SchedulePage {
             },(error)=>{
               console.log('request ble data fail '+"-- "+error);
             });
+          }else{
+            this.events.publish('finish'+((new Date(new Date().getTime() - 86400000*3)).getMonth()+1)+'-'+(new Date(new Date().getTime() - 86400000*3)).getDate());
           }
         });
       });
@@ -652,6 +572,8 @@ export class SchedulePage {
             },(error)=>{
               console.log('request ble data fail '+"-- "+error);
             });
+          }else{
+            this.events.publish('finish'+((new Date(new Date().getTime() - 86400000*4)).getMonth()+1)+'-'+(new Date(new Date().getTime() - 86400000*4)).getDate());
           }
         });
       });
@@ -666,6 +588,8 @@ export class SchedulePage {
             },(error)=>{
               console.log('request ble data fail '+"-- "+error);
             });
+          }else{
+            this.events.publish('finish'+((new Date(new Date().getTime() - 86400000*5)).getMonth()+1)+'-'+(new Date(new Date().getTime() - 86400000*5)).getDate());
           }
         });
       });
@@ -680,6 +604,8 @@ export class SchedulePage {
             },(error)=>{
               console.log('request ble data fail '+"-- "+error);
             });
+          }else{
+            this.events.publish('transfarOver');
           }
         });
       });
@@ -748,5 +674,17 @@ export class SchedulePage {
   }
   jumpToTarget(){
     this.navCtrl.push(TargetPage)
+  }
+  xyx(){
+    var browser = this.iab.create('https://ionicframework.com/');
+    browser.show();
+  }
+  hxh(){
+    var browser = this.iab.create('https://ionicframework.com/');
+    browser.show();
+  }
+  cmh(){
+    var browser = this.iab.create('https://ionicframework.com/');
+    browser.show();
   }
 }

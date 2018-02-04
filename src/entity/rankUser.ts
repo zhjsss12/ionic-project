@@ -5,5 +5,5 @@ export class RankUser {
   step : number ;
   sleep : number ;
   mood : number ;
-
+	color : string ;
 }

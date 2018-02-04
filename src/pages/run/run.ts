@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams ,LoadingController} from 'ionic-angular';
 import {databaseManager} from '../../providers/databaseManager';
 import * as Highcharts from 'highcharts';
 import {dataClass} from '../../entity/dataClass';
@@ -19,15 +19,27 @@ export class RunPage {
   sum7: number = 0;
   sum30: number = 0;
   constructor(public navCtrl: NavController, 
+              public loadingCtrl: LoadingController,
               public navParams: NavParams,
               public dm:databaseManager,) {}
 
   ionViewDidLoad() {
+    console.log('进入了 run.ts 页面');
+    let loader = this.loadingCtrl.create({
+      content: "Please wait..."
+    });
+    loader.present();
+    setTimeout(() => {
+      loader.dismiss();
+    }, 3000);
     this.dm.databaseInit();
     console.log('run.ts  ionViewDidLoad ');
     this.ionChange();
   }
 
+  ionViewWillEnter(){
+    this.dm.databaseInit();
+  }
   renderday1(){
     var categoies = [];
     for (var i = 6; i >= 0; i--) {
@@ -209,7 +221,9 @@ export class RunPage {
       if(day1<10){
         categories1.push('0'+day1.toString());
       }
-      categories1.push(day1.toString());
+      else {
+        categories1.push(day1.toString());
+      }
     }
     console.log(categories1);
 
@@ -235,10 +249,10 @@ export class RunPage {
 
           
         for (var i=0 ; i<resultSet.rows.length;i++) {
-          console.log(categories1);
+          // console.log(categories1);
           var x= resultSet.rows.item(i);
           for (var j in categories1) {
-            console.log(categories1[j] +"   "+ x["datee"].substring(8,10));
+            // console.log(categories1[j] +"   "+ x["datee"].substring(8,10));
             if (categories1[j] == x["datee"].substring(8,10)) {
               run_data[j]=x["sum(II)"]*256+x["sum(HH)"];
             }
@@ -253,7 +267,7 @@ export class RunPage {
           }
         }
         if (cnt>0) {
-          this.average7= sum/cnt;
+          this.average7= Math.round(sum/cnt);
         }
         else this.average7= 0; 
         this.sum7=sum;
@@ -301,7 +315,7 @@ export class RunPage {
           console.log(categories);
           var x= resultSet.rows.item(i);
           for (var j in categories) {
-            console.log(categories[j] +"   "+ x["datee"].substring(5,10));
+            // console.log(categories[j] +"   "+ x["datee"].substring(5,10));
             if (categories[j] == x["datee"].substring(5,10)) {
               run_data[j]=x["sum(II)"]*256+x["sum(HH)"];
             }
@@ -316,7 +330,7 @@ export class RunPage {
           }
         }
         if (cnt>0) {
-          this.average30= sum/cnt;
+          this.average30= Math.round(sum/cnt);
         }
         else this.average30= 0; 
         this.sum30 = sum; 

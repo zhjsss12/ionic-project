@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle color="primary">
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>新建群组</ion-title>
+
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <!-- <img [src]="picPath" alt="avatar" />
+    <button ion-button (click)="uploadGroupPic()">上传群头像</button> -->
+    <ion-item>
+      <ion-label stacked>群组名</ion-label>
+      <ion-input [(ngModel)]="groupName" type="text"></ion-input>
+    </ion-item>
+    <p ion-text [hidden]="groupName != '' || submitted == false" color="danger" padding-left>
+      Groupname is required
+    </p>
+    <p ion-text [hidden]="groupName != '' || groupNameHasExist == false" color="danger" padding-left>
+      Groupname has existed
+    </p>
+
+    <ion-item>
+      <ion-label stacked>群组描述</ion-label>
+      <ion-input [(ngModel)]="groupDes" type="text"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>私密群</ion-label>
+      <ion-toggle [(ngModel)]="setPassword" color="secondary" (ionChange)="notify()"></ion-toggle>
+    </ion-item>
+
+    <ion-item id="passwordLocal" [hidden]="hide">
+      <ion-label stacked>入群密码</ion-label>
+      <ion-input [(ngModel)]="groupPassword" type="password"></ion-input>
+    </ion-item>
+    <button ion-button (click)="createGroup()" style="margin-left:10px">确认</button>
+  </ion-list>
+</ion-content>

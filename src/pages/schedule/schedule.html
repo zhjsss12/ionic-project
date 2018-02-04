@@ -1,14 +1,10 @@
 <ion-header>
-  <ion-navbar no-border-bottom>
+  <ion-navbar no-border-bottom color="primary">
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
     <ion-title>首页</ion-title>
-    <ion-buttons end>
-      <button ion-button icon-only (click)="presentFilter()">
-        <ion-icon ios="ios-options-outline" md="md-options"></ion-icon>
-      </button>
-    </ion-buttons>
+
   </ion-navbar>
 
 </ion-header>
@@ -42,23 +38,18 @@
 </div>
   <ion-row style="">
     <ion-col  text-center>
-      <button ion-button icon-only round>
+      <button ion-button icon-only round (click)="xyx()">
         <ion-icon name="logo-vimeo"></ion-icon>
       </button>
     </ion-col>
     <ion-col  text-center>
-      <button ion-button icon-only round>
+      <button ion-button icon-only round (click)="hxh()">
         <ion-icon name="logo-twitter"></ion-icon>
       </button>
     </ion-col>
     <ion-col  text-center>
-      <button ion-button icon-only round>
+      <button ion-button icon-only round (click)="cmh()">
         <ion-icon name="logo-facebook"></ion-icon>
-      </button>
-    </ion-col>
-    <ion-col  text-center>
-      <button ion-button icon-only round>
-        <ion-icon name="logo-vimeo"></ion-icon>
       </button>
     </ion-col>
   </ion-row>
@@ -82,7 +73,7 @@
     <button ion-button clear (click)="jumpToTarget()"><h3 style="font-size:20px">查看目标</h3></button>
     <ion-badge item-end>12</ion-badge>
   </ion-item>
-  <ion-item>
+  <!-- <ion-item>
     <button ion-button clear><h3 style="font-size:20px" (click)="wowowo()">send</h3></button>
     <ion-badge item-end>12</ion-badge>
   </ion-item>
@@ -95,7 +86,7 @@
       <button ion-fab color="twitter" (click)="openSocial('Twitter', fab)"><ion-icon name="logo-twitter"></ion-icon></button>
       <button ion-fab color="facebook" (click)="openSocial('Facebook', fab)"><ion-icon name="logo-facebook"></ion-icon></button>
     </ion-fab-list>
-  </ion-fab>
+  </ion-fab> -->
 
 
 </ion-content>

@@ -54,6 +54,116 @@ export class httpManager {
     });
 
   }
+      // ["This is Machine Learning group description",
+      //  "Machine Learning",
+      // "1",
+      // "123"]
+  //发送群组信息给服务器
+  sendGroupToServer(data):Promise<any>{
+    var body : any = { body:{
+      groupName : data[0],
+      description : data[1],
+      hasPass : data[2],
+      password : data[3]
+    }};
+    console.log(body);
+    return new Promise((resolve,reject)=>{
+      this.http.post('http://120.26.131.179:80/createGroup', {body}, {}).then(data => {
+        console.log('statu: '+data.status);
+        console.log('send data: '+data.data);
+        resolve(data.data);
+      }).catch(error => {
+        console.log('error statu: '+error.status);
+        console.log('error: '+error.error);
+        reject(error.error);
+      });
+    });
+  }
 
+  //发送用户加群信息给服务器
+  sendEnterGroupToServer(groupName){
+      this.userData.getUsername().then((userName) => {
+        var body : any = { 
+          userName : userName,
+          groupName : groupName,
+        };
+        console.log('sendEnterGroupToServer');
+        console.log(body);
+        this.http.post('http://120.26.131.179:80/enterGroup', {body}, {}).then(data => {
+          console.log('statu: '+data.status);
+          console.log('send data: '+data.data);
 
+        }).catch(error => {
+          console.log('error statu: '+error.status);
+          console.log('error: '+error.error);
+        });
+    });
+  }
+
+  //发送用户加群信息给服务器
+  sendExitGroupToServer(groupName){
+      this.userData.getUsername().then((userName) => {
+        var body : any = { 
+          userName : userName,
+          groupName : groupName,
+        };
+        console.log('sendEnterGroupToServer');
+        console.log(body);
+        this.http.post('http://120.26.131.179:80/exitGroup', {body}, {}).then(data => {
+          console.log('statu: '+data.status);
+          console.log('send data: '+data.data);
+
+        }).catch(error => {
+          console.log('error statu: '+error.status);
+          console.log('error: '+error.error);
+        });
+    });
+  }
+
+// 获取服务器中的群组信息
+  getGroup():Promise<any>{
+    return new Promise((resolve,reject)=>{
+      this.http.get('http://120.26.131.179:80/getGroup', {}, {})
+        .then(data => {
+          console.log(data.status);
+          console.log(data.data); // data received by server
+          console.log(data.headers);
+          let obj = JSON.parse(data.data)
+          resolve(obj.data);
+
+        })
+        .catch(error => {
+          console.log(error.status);
+          console.log(error.error); // error message as string
+          console.log(error.headers);
+          reject(error)
+        });
+      }
+    );
+  }
+
+  getSelfGroupFriends(name): Promise<any> {
+    console.log('getSelfGroupFriends');
+    var data = {name: name};
+    return new Promise((resolve,reject)=>{
+      this.http.post('http://120.26.131.179:80/getSelfGroupFriends',{data},{}).then((data) => {
+        console.log(data.status);
+        console.log(data.data); // data received by server
+        console.log(data.headers);
+        let obj = JSON.parse(data.data);
+        console.log(obj);
+        console.log(obj.friends);
+        console.log(typeof obj.friends);
+        console.log(typeof obj);
+        resolve(obj);
+      }).catch((error) => {
+        console.log(error.status);
+        console.log(error.error); // error message as string
+        console.log(error.headers);
+        reject(error);
+      });
+    });
+  }
 }
+
+

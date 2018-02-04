@@ -10,6 +10,7 @@ import { IonicStorageModule } from '@ionic/storage';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { HttpModule } from '@angular/http';
 import { SQLite } from '@ionic-native/sqlite';
+// import { ThemeableBrowser, ThemeableBrowserOptions, ThemeableBrowserObject } from '@ionic-native/themeable-browser';
 
 import { HelloIonicPage } from '../pages/hello-ionic/hello-ionic';
 import { AboutPage } from '../pages/about/about';
@@ -33,7 +34,8 @@ import { SleepPage } from '../pages/sleep/sleep';
 import { RunPage } from '../pages/run/run';
 import { MoodPage } from '../pages/mood/mood';
 import { NotificationPage } from '../pages/notification/notification';
-
+import { GroupCreatePage } from '../pages/group-create/group-create';
+import { GroupListPage } from '../pages/group-list/group-list';
 import { ConferenceData } from '../providers/conference-data';
 import { UserData } from '../providers/user-data';
 import { databaseManager } from '../providers/databaseManager';
@@ -41,6 +43,7 @@ import { bleManager } from '../providers/bleManager';
 import { httpManager } from '../providers/httpManager';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+import { ImagePicker } from '@ionic-native/image-picker';
 
 @NgModule({
   declarations: [
@@ -66,7 +69,9 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     MoodPage,
     RunPage,
     RankPage,
-    TargetPage
+    TargetPage,
+    GroupCreatePage,
+    GroupListPage
   ],
   imports: [
     BrowserModule,
@@ -93,7 +98,8 @@ import { SplashScreen } from '@ionic-native/splash-screen';
         { component: MoodPage, name: 'MoodPage', segment: 'mood' },
         { component: RunPage, name: 'RunPage', segment: 'run' },
         { component: RankPage, name: 'RankPage', segment: 'rank' },
-        { component: TargetPage, name: 'TargetPage', segment: 'target'}
+        { component: TargetPage, name: 'TargetPage', segment: 'target'},
+        { component: GroupListPage, name: 'GroupListPage', segment: 'group-list'}
       ]
     }),
     IonicStorageModule.forRoot()
@@ -122,7 +128,9 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     MoodPage,
     RunPage,
     RankPage,
-    TargetPage
+    TargetPage,
+    GroupCreatePage,
+    GroupListPage
   ],
   providers: [
     StatusBar,
@@ -138,6 +146,9 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     databaseManager,
     bleManager,
     httpManager,
+    ImagePicker,
+    // ThemeableBrowser,
+    // ThemeableBrowserObject,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })

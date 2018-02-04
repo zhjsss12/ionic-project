@@ -5,7 +5,8 @@ import {
   ActionSheetController,
   ActionSheetOptions,
   Config,
-  NavController
+  NavController,
+  LoadingController
 } from 'ionic-angular';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 
@@ -26,7 +27,7 @@ import * as Highcharts from 'highcharts';
 })
 export class SleepPage {
   actionSheet: ActionSheet;
-
+  
 
   speakers: any[] = [];
   chart:any;
@@ -40,14 +41,33 @@ export class SleepPage {
     public inAppBrowser: InAppBrowser,
     private sqlite: SQLite,
     public dm:databaseManager,
-
+    public loadingCtrl: LoadingController,
   ) {}
 
 
+  cal(num :number) : string{
+    var tmp= new Date();
+    var time = tmp.getTime();
+    tmp= new Date(time + 24*60*60*1000*num);
+    var day = (tmp.getFullYear()%100).toString();
+    if(tmp.getMonth()<9){
+      day+= ('0'+ (tmp.getMonth() + 1 ).toString());
+    }
+    else {
+      day += (tmp.getMonth() + 1 ).toString();
+    }
+    if ( tmp.getDate() < 10){
+      day += ('0'+tmp.getDate().toString() );
+    }
+    else{
+      day += tmp.getDate().toString();
+    }
+    return day;
+  }
   insert(){
     let dc= new dataClass();
-    let str1 : string[]=['18','1','25','50','255','2','1','2','1','2','1','2','1'];
-    var index= 18012550;
+    let str1 : string[]=['18','1','27','50','255','2','1','2','1','2','1','2','1'];
+    var index= 18012750;
     for (var i = 0; i < 20; ++i) {
       dc.setData(str1);
       dc.setId(index.toString());
@@ -60,10 +80,8 @@ export class SleepPage {
     }
   }
 
-
-  ionViewDidLoad() {
-    this.dm.databaseInit();
-    var obj = document.getElementById("container");
+  render1(){
+    var obj = document.getElementById("container"); 
     if(obj){
       console.log("sleep.ts ionviewDidload  find container");
     }
@@ -112,79 +130,8 @@ export class SleepPage {
           ]
         }]
     });
-    var categoies = [];
-    for (var i = 6; i >= 0; i--) {
-      var x=new Date().getTime() ;
-      var date=new Date(x-24*60*60*1000*i);
-      var mon=date.getMonth()+1;
-      var day=date.getDate();
-      categoies.push(mon+'\\'+day);
-    }
-    console.log(categoies);
-
-    var obj = document.getElementById("container7");
-    if(obj){
-      console.log("sleep.ts ionviewDidload  find container7");
-    }
-    else {
-      console.log("sleep.ts/ionviewDidload  not find container7");
-    }
-    this.chart7 = Highcharts.chart('container7', {
-      chart:{
-        type:'column'
-      },
-      title: {
-        text: '近一星期睡眠质量分析',
-        x: -20
-      },
-      subtitle: {
-          text: 'subtitle',
-          x: -20
-      },
-      plotOptions: {
-        line: {
-          dataLabels: {
-            enabled: true
-          }
-        }
-      },
-      xAxis: {
-          categories: categoies
-      },
-      yAxis: {
-        title: {
-            text: '睡眠质量'
-        },
-        plotLines: [{
-            value: 0,
-            width: 1,
-            color: '#808080'
-        }],
-        labels: {
-          formatter:function(){
-            if(this.value <=5000) {
-              return this.value;
-            }else if(this.value >5000 && this.value <=10000) {
-              return this.value;
-            }else {
-              return this.value;
-            }
-          }
-        }
-      },
-      tooltip: {
-          valueSuffix: 'm'
-      },
-      legend: {
-          layout: 'vertical',
-          align: 'right',
-          verticalAlign: 'middle',
-          borderWidth: 0
-      },
-      series: [{
-        data: [5535,5654,451,2124,4579,1249,1547]
-      }]
-    });
+  }
+  render2(){
     var tmp= new Date();
     var time = tmp.getTime();
     if ( tmp.getHours()>12 ){
@@ -280,15 +227,15 @@ export class SleepPage {
         }],
         labels: {
           formatter:function(){
-            if(this.value <=5000) {
+            if(this.value <=5000) { 
               return this.value;
-            }else if(this.value >5000 && this.value <=10000) {
+            }else if(this.value >5000 && this.value <=10000) { 
               return this.value;
-            }else {
+            }else { 
               return this.value;
             }
           }
-        }
+        }    
       },
       tooltip: {
           valueSuffix: 'm'
@@ -303,14 +250,14 @@ export class SleepPage {
         name : '睡眠质量',
         data: arr
       }]
-    });
+    });   
     this.dm.querySleep(strYesterday,strToday).then(
       (answer)=>{
         console.log('sleep.ts length ' + answer.rows.length);
         var len = answer.rows.length;
         var j = 0;
-        var sleep1 = 0 ,sleep2 = 0 ,sleep3 = 0 ,sleep4 = 0 ,sleepelse = 0 ;
-        for (var i = 0; i < 96; i++) {
+        var sleep1 = 0 ,sleep2 = 0 ,sleep3 = 0 ,sleep4 = 1 ,sleepelse = 0 ;
+        for (var i = 0; i < len; i++) {
           if( j < len && ids[i] == answer.rows.item(j)['id']){
             arr[i] = answer.rows.item(j)["FF + GG + HH + II +JJ +KK+ LL +MM"];
             j++;
@@ -355,18 +302,18 @@ export class SleepPage {
         });
         this.chart.redraw();
 
-        console.log('sleep.ts arr ' + arr);
-        for ( var i=0 ; i<answer.rows.length;i++) {
-          var x= answer.rows.item(i);
-          var listAtr=[];
-          var listData=[];
-          for (var jj in x) {
-            listAtr.push(jj);
-            listData.push(x[jj]);
-          }
-          console.log(listAtr);
-          console.log(listData);
-        }
+        console.log('sleep.ts arr 四种睡眠' + arr);
+        // for ( var i=0 ; i<answer.rows.length;i++) {
+        //   var x= answer.rows.item(i);
+        //   var listAtr=[];
+        //   var listData=[];
+        //   for (var jj in x) {
+        //     listAtr.push(jj);
+        //     listData.push(x[jj]);
+        //   }
+        //   console.log(listAtr);
+        //   console.log(listData);
+        // }
 
 
       },
@@ -374,4 +321,151 @@ export class SleepPage {
         console.log("sleep.ts " + Error);
     });
   }
+  render3(){
+    var categoies = [];
+    for (var i = 6; i >= 0; i--) {
+      var x=new Date().getTime() ;
+      var date=new Date(x-24*60*60*1000*i);
+      var mon=date.getMonth()+1;
+      var day=date.getDate();
+      categoies.push(mon+'\\'+day);
+    }
+    console.log(categoies);
+
+    var obj = document.getElementById("container7"); 
+    if(obj){
+      console.log("sleep.ts ionviewDidload  find container7");
+    }
+    else {
+      console.log("sleep.ts/ionviewDidload  not find container7");
+    }
+    this.chart7 = Highcharts.chart('container7', {
+      chart:{
+        type:'column'
+      },
+      title: {
+        text: '近一星期睡眠质量分析',
+        x: -20
+      },
+      subtitle: {
+          text: 'subtitle',
+          x: -20
+      },
+      plotOptions: {
+        line: {
+          dataLabels: {
+            enabled: true
+          }
+        }
+      },
+      xAxis: {
+          categories: categoies
+      },
+      yAxis: {
+        title: {
+            text: '睡眠质量'
+        },
+        plotLines: [{
+            value: 0,
+            width: 1,
+            color: '#808080'
+        }],
+        labels: {
+          formatter:function(){
+            if(this.value <=5000) { 
+              return this.value;
+            }else if(this.value >5000 && this.value <=10000) { 
+              return this.value;
+            }else { 
+              return this.value;
+            }
+          }
+        }    
+      },
+      tooltip: {
+          valueSuffix: 'm'
+      },
+      legend: {
+          layout: 'vertical',
+          align: 'right',
+          verticalAlign: 'middle',
+          borderWidth: 0
+      },
+      series: [{
+        data: [5535,5654,451,2124,4579,1249,1547]
+      }]
+    });   
+    var strYesterday = this.cal(-7);
+    var strToday = this.cal(0);
+    var sum = [];
+    for (var i = 0; i < 7; i++) {
+      sum.push(0);
+    }
+    var ids = [];
+    for (var i = -7; i <= 0 ; i++) {
+      ids.push(this.cal(i));
+    }
+
+    this.dm.querySleep(strYesterday,strToday).then(
+      (answer)=>{
+        console.log('sleep.ts chart3 length ' + answer.rows.length);
+        var len = answer.rows.length;
+        var longStr = "FF + GG + HH + II +JJ +KK+ LL +MM";
+        var cnt = [];
+        for (var i = 0; i < 7 ; i++) {
+          cnt.push(0);
+        }
+
+        for (var i = 0; i < len; i++) {
+          var x = answer.rows.item(i)
+          for (var j = 0; j < 7; j++) {
+            // console.log(+x['id'] ,+(ids[j+1] + '48'), +(ids[j] + '48'));
+            if(+x['id'] < +(ids[j+1] + '48') &&  +x['id'] >=  +(ids[j] + '48') && x[longStr] > 0){
+              sum[j] += x[longStr];
+              cnt[j] ++ ; 
+              break;
+            }
+          }
+        }
+        console.log('sleep.ts chart3 sum ' + sum);
+        this.chart7.series[0].update({
+          name: '每天睡眠质量',
+          data: sum
+        });
+        this.chart7.redraw();
+
+        // for ( var i=0 ; i<answer.rows.length;i++) {
+        //   var x= answer.rows.item(i);
+        //   var listAtr=[];
+        //   var listData=[];
+        //   for (var jj in x) {
+        //     listAtr.push(jj);
+        //     listData.push(x[jj]);
+        //   }
+        //   console.log(listAtr);
+        //   console.log(listData);
+        // }
+      },
+      (Error)=>{
+        console.log("sleep.ts " + Error);
+    });
+  }
+  ionViewDidLoad() {
+    let loader = this.loadingCtrl.create({
+      content: "Please wait..."
+    });
+    loader.present();
+    setTimeout(() => {
+      loader.dismiss();
+    }, 3000);
+    this.dm.databaseInit();
+    this.render1();
+    this.render2();
+    this.render3();
+  }
+  ionViewWillEnter(){
+    this.dm.databaseInit();
+    console.log('进入了 sleep 页面');
+  }
 }
+ 

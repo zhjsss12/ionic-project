@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 
-import { AlertController, NavController } from 'ionic-angular';
+import { AlertController, NavController, Events } from 'ionic-angular';
+import { ImagePicker } from '@ionic-native/image-picker';
 
 import { UserData } from '../../providers/user-data';
 import { HTTP } from '@ionic-native/http';
@@ -11,9 +12,21 @@ import { UserOptions } from '../../interfaces/user-options';
 })
 export class AccountPage {
   username: string;
+  picPath = "http://www.gravatar.com/avatar?d=mm&s=140";
+  constructor(
+    public alertCtrl: AlertController,
+    public nav: NavController,
+    public userData: UserData,
+    private http: HTTP,
+    private imagePicker: ImagePicker,
+    public events: Events
+  ) {
 
-  constructor(public alertCtrl: AlertController, public nav: NavController, public userData: UserData, private http: HTTP) {
-
+  }
+  ionViewDidLoad(){
+    this.userData.getUserPic().then((value) => {
+      this.picPath = value;
+    });
   }
 
   ngAfterViewInit() {
@@ -22,6 +35,25 @@ export class AccountPage {
 
   updatePicture() {
     console.log('Clicked to update picture');
+    const options = {//options表示选取的图片参数
+      maximumImagesCount: 1,//一次性最多只能选5张，ios系统无效，android上面有效
+      width: 500,//图片的宽度
+      height: 500,//图片的高度
+      quality: 50,//图片的质量0-100之间选择
+      outputType: 0 // default .FILE_URI返回影像档的，0表示FILE_URI返回影像档的也是默认的，1表示返回base64格式的图片
+    }
+    var arry = []
+    this.imagePicker.getPictures(options).then((results) => {
+      for (var i = 0; i < results.length; i++) {
+        // arry.push("data:image/jpeg;base64," + results[i]);//处理图片的格式，用于向服务器传输
+        console.log(results[i])
+        this.picPath = results[i];
+        this.userData.setUserPic(this.picPath);
+        this.events.publish('picHasChanged');
+      }
+    }, (err) => {
+      console.log("error"+err);
+    });
   }
 
   // Present an alert with the current username populated
