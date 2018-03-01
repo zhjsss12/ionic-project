@@ -1,10 +1,17 @@
-.slide1 {
-  /*background-image: url(assets/img/timg.jpg);*/
-  background-image: url("../assets/img/timg.jpg");
-  background-repeat: no-repeat; 
+ion-content {
+  background-image: url("../assets/img/1.jpg");
+
+    background-repeat: no-repeat;
   background-size: 100% 100%;
   -moz-background-size:100% 100%;
 }
+// .slide1 {
+//   /*background-image: url(assets/img/timg.jpg);*/
+//   background-image: url("../assets/img/timg.jpg");
+//   background-repeat: no-repeat;
+//   background-size: 100% 100%;
+//   -moz-background-size:100% 100%;
+// }
 .input{
   background-color: transparent;
 }
@@ -22,28 +29,28 @@
 
 .word{
   font-weight: bold;
-  position: absolute;
-  top: 4%;
-  left: 50%; 
-  margin-left: -200px;
-  width: 400px;
+  position: relative;
+  top: 10%;
+  left: 50%;
+  margin-left: -40px;
   color: #7B68EE;
-  font-family:Arial,Helvetica,sans-serif;font-size:500%;
-  
+  height: 10%;
+  font-family:Arial,Helvetica,sans-serif;font-size:80px;
+
 }
 .ring-1 {
   position: absolute;
   left: 50%;
-  top: 0%;
-  margin-left: -75px;
+  top: 27%;
+  border-left: 77px;
   transform: translate3d(-50%, -50%, 0);
   border: 5px solid rgba(0, 255, 255, 0.3);
   box-shadow: 0 0 20px rgba(0, 255, 255, 0.1), 0 0 50px rgba(0, 255, 255, 0.1), inset 0 0 20px rgba(0, 255, 255, 0.1), inset 0 0 50px rgba(0, 255, 255, 0.1);
   border-radius: 100%;
   width: 150px;
   height: 150px;
-  -webkit-transform: scale(1);
-  -webkit-animation: rotate 3.5s infinite alternate-reverse;
+
+
 }
 
 
@@ -58,7 +65,7 @@
   border-radius: 100%;
   width: 150px;
   height: 150px;
-  -webkit-transform: scale(1);
+
   -webkit-animation: rotate 2s infinite alternate;
 }
 
@@ -155,7 +162,32 @@
   -webkit-transform: scale(1);
   -webkit-animation: rotate 10s infinite alternate-reverse;
 }
+.card-background-page {
 
+  ion-card {
+    position: relative;
+    text-align: center;
+    padding: 10px 10px 10px 10px;
+  }
+
+  .card-title {
+    position: absolute;
+    top: 36%;
+    font-size: 2.0em;
+    width: 100%;
+    font-weight: bold;
+    color: #fff;
+  }
+
+  .card-subtitle {
+    font-size: 1.0em;
+    position: absolute;
+    top: 52%;
+    width: 100%;
+    color: #fff;
+  }
+
+}
 
 @-webkit-keyframes rotate {
   0% {
@@ -173,6 +205,3 @@
     -webkit-transform: rotate(90deg) scaleX(1.1);
   }
 }
-
-
-

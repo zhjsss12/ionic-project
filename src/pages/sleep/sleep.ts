@@ -9,9 +9,9 @@ import {
   LoadingController
 } from 'ionic-angular';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
-
+import { httpManager } from '../../providers/httpManager';
 import { ConferenceData } from '../../providers/conference-data';
-
+import { UserData } from '../../providers/user-data';
 import { SessionDetailPage } from '../session-detail/session-detail';
 import { SpeakerDetailPage } from '../speaker-detail/speaker-detail';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
@@ -27,7 +27,7 @@ import * as Highcharts from 'highcharts';
 })
 export class SleepPage {
   actionSheet: ActionSheet;
-  
+
 
   speakers: any[] = [];
   chart:any;
@@ -42,8 +42,30 @@ export class SleepPage {
     private sqlite: SQLite,
     public dm:databaseManager,
     public loadingCtrl: LoadingController,
+    public user: UserData,
+    private hm: httpManager,
   ) {}
 
+  ionViewDidLoad() {
+    console.log('sleep.ts  ionViewDidLoad');
+    let loader = this.loadingCtrl.create({
+      content: "Please wait..."
+    });
+    loader.present();
+    setTimeout(() => {
+      loader.dismiss();
+    }, 3000);
+  }
+  ionViewWillEnter(){
+    this.dm.databaseInit();
+    this.render1();
+    this.render2();
+    this.render3();
+    console.log('进入了 sleep 页面');
+  }
+  // test(){
+  //   this.hm.sendRankToServer('二狗子',10,10,10);
+  // }
 
   cal(num :number) : string{
     var tmp= new Date();
@@ -81,7 +103,7 @@ export class SleepPage {
   }
 
   render1(){
-    var obj = document.getElementById("container"); 
+    var obj = document.getElementById("container");
     if(obj){
       console.log("sleep.ts ionviewDidload  find container");
     }
@@ -202,10 +224,10 @@ export class SleepPage {
         text: '近日详细睡眠质量',
         x: -20
       },
-      subtitle: {
-          text: 'subtitle',
-          x: -20
-      },
+      // subtitle: {
+      //     text: 'subtitle',
+      //     x: -20
+      // },
       plotOptions: {
         line: {
           dataLabels: {
@@ -227,15 +249,15 @@ export class SleepPage {
         }],
         labels: {
           formatter:function(){
-            if(this.value <=5000) { 
+            if(this.value <=5000) {
               return this.value;
-            }else if(this.value >5000 && this.value <=10000) { 
+            }else if(this.value >5000 && this.value <=10000) {
               return this.value;
-            }else { 
+            }else {
               return this.value;
             }
           }
-        }    
+        }
       },
       tooltip: {
           valueSuffix: 'm'
@@ -250,7 +272,7 @@ export class SleepPage {
         name : '睡眠质量',
         data: arr
       }]
-    });   
+    });
     this.dm.querySleep(strYesterday,strToday).then(
       (answer)=>{
         console.log('sleep.ts length ' + answer.rows.length);
@@ -332,7 +354,7 @@ export class SleepPage {
     }
     console.log(categoies);
 
-    var obj = document.getElementById("container7"); 
+    var obj = document.getElementById("container7");
     if(obj){
       console.log("sleep.ts ionviewDidload  find container7");
     }
@@ -347,10 +369,10 @@ export class SleepPage {
         text: '近一星期睡眠质量分析',
         x: -20
       },
-      subtitle: {
-          text: 'subtitle',
-          x: -20
-      },
+      // subtitle: {
+      //     text: 'subtitle',
+      //     x: -20
+      // },
       plotOptions: {
         line: {
           dataLabels: {
@@ -372,15 +394,15 @@ export class SleepPage {
         }],
         labels: {
           formatter:function(){
-            if(this.value <=5000) { 
+            if(this.value <=5000) {
               return this.value;
-            }else if(this.value >5000 && this.value <=10000) { 
+            }else if(this.value >5000 && this.value <=10000) {
               return this.value;
-            }else { 
+            }else {
               return this.value;
             }
           }
-        }    
+        }
       },
       tooltip: {
           valueSuffix: 'm'
@@ -394,7 +416,7 @@ export class SleepPage {
       series: [{
         data: [5535,5654,451,2124,4579,1249,1547]
       }]
-    });   
+    });
     var strYesterday = this.cal(-7);
     var strToday = this.cal(0);
     var sum = [];
@@ -418,15 +440,23 @@ export class SleepPage {
 
         for (var i = 0; i < len; i++) {
           var x = answer.rows.item(i)
+          // console.log(x,x[longStr]);
           for (var j = 0; j < 7; j++) {
             // console.log(+x['id'] ,+(ids[j+1] + '48'), +(ids[j] + '48'));
             if(+x['id'] < +(ids[j+1] + '48') &&  +x['id'] >=  +(ids[j] + '48') && x[longStr] > 0){
-              sum[j] += x[longStr];
-              cnt[j] ++ ; 
+              sum[j] += (1024-x[longStr]);
+              cnt[j] ++ ;
               break;
             }
           }
         }
+
+        this.user.getUsername().then(
+          userName =>{
+            this.hm.sendSleepToServer(userName,sum[6]);
+          });
+        this.user.setSleepData(sum[6]);
+
         console.log('sleep.ts chart3 sum ' + sum);
         this.chart7.series[0].update({
           name: '每天睡眠质量',
@@ -450,22 +480,5 @@ export class SleepPage {
         console.log("sleep.ts " + Error);
     });
   }
-  ionViewDidLoad() {
-    let loader = this.loadingCtrl.create({
-      content: "Please wait..."
-    });
-    loader.present();
-    setTimeout(() => {
-      loader.dismiss();
-    }, 3000);
-    this.dm.databaseInit();
-    this.render1();
-    this.render2();
-    this.render3();
-  }
-  ionViewWillEnter(){
-    this.dm.databaseInit();
-    console.log('进入了 sleep 页面');
-  }
+
 }
- 

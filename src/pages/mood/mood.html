@@ -9,39 +9,98 @@
 
 
 <ion-content no-padding>
-  <ion-slides no-padding pager>
+  <div padding>
+  <ion-segment [(ngModel)]="isHistory">
+    <ion-segment-button value="new">
+      心情
+    </ion-segment-button>
+    <ion-segment-button value="history">
+      历史
+    </ion-segment-button>
+  </ion-segment>
+</div>
+
+<div [ngSwitch]="isHistory" style="padding-left:15px; padding-right:15px">
+  <div *ngSwitchCase="'new'" class="slide1">
+    <div class="halo ring-1"></div>
+    <!-- <div class="halo ring-2"></div> -->
+    <ion-label class="word">55</ion-label>
+    <ion-item class="input">
+        <ion-label floating>一句话描述你的心情</ion-label>
+        <ion-input type="text" [(ngModel)]="sentance"></ion-input>
+    </ion-item>
+    <ion-item class="input">
+        <button ion-button clear (click)="addPic()"><h3>点此添加图片</h3></button>
+        <!-- <ion-badge item-end>12</ion-badge> -->
+    </ion-item>
+    <img [src]="picPath" style="max-width: 140px; margin-left:10%">
+    <div padding>
+        <button ion-button color="primary" block (click)="OnClick()">提交</button>
+    </div>
+  </div>
+
+  <div *ngSwitchCase="'history'">
+    <ion-refresher (ionRefresh)="doRefresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+    <ion-card *ngFor="let note of notes;">
+      <img [src]="note.pic" style=""/>
+      <ion-card-content>
+        <ion-card-title>
+          我的心情
+        </ion-card-title>
+        <p>
+          {{ note.sent }}
+        </p>
+      </ion-card-content>
+      <!-- <div class="card-title">{{ note.sent }}</div> -->
+      <!-- <div class="card-subtitle"></div> -->
+    </ion-card>
+  </div>
+
+
+</div>
+  <!-- <ion-slides no-padding pager>
     <ion-slide no-padding class="slide1">
-      <!-- <div class="halo ring-1"></div>
+      <div class="halo ring-1"></div>
       <div class="halo ring-2"></div>
       <div class="halo ring-3"></div>
       <div class="halo ring-4"></div>
       <div class="halo ring-5"></div>
       <div class="halo ring-6"></div>
       <div class="halo ring-7"></div>
-      <div class="halo ring-8"></div> -->
+      <div class="halo ring-8"></div>
       <ion-label class="word">55</ion-label>
       <ion-item class="input">
           <ion-label floating>一句话描述你的心情</ion-label>
-          <ion-input type="text"></ion-input>
+          <ion-input type="text" [(ngModel)]="sentance"></ion-input>
       </ion-item>
+      <ion-item>
+          <button ion-button clear (click)="addPic()"><h3>点此添加图片</h3></button>
+      </ion-item>
+      <img [src]="picPath" style="max-width: 140px;">
       <div padding>
-          <button ion-button color="primary" block>评估</button>
+          <button ion-button color="primary" block (click)="OnClick()">提交</button>
       </div>
-      <!-- <ion-label >地方开始九分裤+{{moodScore}}</ion-label> -->
-    </ion-slide>
-    <ion-slide >
-        <em>C</em>
-    <em class="planet left">O</em>
-    <em>S</em>
-    <em>M</em>
-    <em class="planet right">O</em>
-    <em>S</em>
+      <ion-label >地方开始九分裤+{{moodScore}}</ion-label>
     </ion-slide>
 
-    <ion-slide >
 
+    <ion-slide  class="card-background-page">
+      <ion-refresher (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content
+          pullingIcon="arrow-dropdown"
+          pullingText="下拉刷新"
+          refreshingSpinner="circles"
+          refreshingText="正在刷新..."></ion-refresher-content>
+      </ion-refresher>
+      <ion-card *ngFor="let note of notes;">
+        <img [src]="note.pic" style=""/>
+        <div class="card-title">{{ note.sent }}</div>
+        <div class="card-subtitle"></div>
+      </ion-card>
     </ion-slide>
 
-  </ion-slides>
+  </ion-slides> -->
 
 </ion-content>

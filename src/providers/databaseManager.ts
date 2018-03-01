@@ -151,17 +151,17 @@ query(): Promise<any>{
     return new Promise((resolve,reject)=>{
       var sql;
       if (type == '0') {
-        sql= "select datee " +q+"from ( select * from sports where EE = 0 and datee between date('now','-"+num+" day') and date('now') ) group by datee order by datee asc;";
+        sql= "select datee " +q+" from ( select * from sports where EE = 0 and datee between date('now','-"+num+" day') and date('now') ) group by datee order by datee asc;";
       }
       else {
-        sql= "select datee " +q+"from ( select * from sports where EE != 0 and datee between date('now','-"+num+" day') and date('now') ) group by datee order by datee asc;";
+        sql= "select datee " +q+" from ( select * from sports where EE != 0 and datee between date('now','-"+num+" day') and date('now') ) group by datee order by datee asc;";
       }
       console.log("databaseManager.ts queryLastAse sql "+sql);
       this.myAppDatabase.executeSql(sql,[])
         .then(
           (resultSet) => {
             console.log('sql resultSet.length : '+resultSet.rows.length);
-            
+
             console.log(resultSet);
             resolve(resultSet);
           })

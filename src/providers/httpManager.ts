@@ -60,22 +60,30 @@ export class httpManager {
       // "123"]
   //发送群组信息给服务器
   sendGroupToServer(data):Promise<any>{
-    var body : any = { body:{
-      groupName : data[0],
-      description : data[1],
-      hasPass : data[2],
-      password : data[3]
-    }};
-    console.log(body);
+
     return new Promise((resolve,reject)=>{
-      this.http.post('http://120.26.131.179:80/createGroup', {body}, {}).then(data => {
-        console.log('statu: '+data.status);
-        console.log('send data: '+data.data);
-        resolve(data.data);
+      this.userData.getUsername().then((userName) => {
+        var body : any = { body:{
+          groupName : data[0],
+          description : data[1],
+          hasPass : data[2],
+          password : data[3],
+          userName : userName
+        }};
+        console.log(body);        
+        this.http.post('http://120.26.131.179:80/createGroup', {body}, {}).then(data => {
+          console.log('statu: '+data.status);
+          console.log('send data: '+data.data);
+          resolve(data.data);
+        }).catch(error => {
+          console.log('error statu: '+error.status);
+          console.log('error: '+error.error);
+          reject(error.error);
+        });
       }).catch(error => {
-        console.log('error statu: '+error.status);
-        console.log('error: '+error.error);
-        reject(error.error);
+          console.log('error statu: '+error.status);
+          console.log('error: '+error.error);
+          reject(error.error);
       });
     });
   }
@@ -123,20 +131,25 @@ export class httpManager {
 // 获取服务器中的群组信息
   getGroup():Promise<any>{
     return new Promise((resolve,reject)=>{
-      this.http.get('http://120.26.131.179:80/getGroup', {}, {})
-        .then(data => {
-          console.log(data.status);
-          console.log(data.data); // data received by server
-          console.log(data.headers);
-          let obj = JSON.parse(data.data)
-          resolve(obj.data);
+      this.userData.getUsername().then((userName) => {
+        var body : any = { 
+          userName : userName
+        };
+        this.http.post('http://120.26.131.179:80/getGroup', {body}, {})
+          .then(data => {
+            console.log(data.status);
+            console.log(data.data); // data received by server
+            console.log(data.headers);
+            let obj = JSON.parse(data.data)
+            resolve([obj.data,obj.groups]);
 
-        })
-        .catch(error => {
-          console.log(error.status);
-          console.log(error.error); // error message as string
-          console.log(error.headers);
-          reject(error)
+          })
+          .catch(error => {
+            console.log(error.status);
+            console.log(error.error); // error message as string
+            console.log(error.headers);
+            reject(error)
+          });
         });
       }
     );
@@ -164,6 +177,57 @@ export class httpManager {
       });
     });
   }
+
+  sendRunToServer(userName,run){
+    console.log('sendRunToServer');
+    var data = {userName: userName,
+                run : run,};
+
+    this.http.post('http://120.26.131.179:80/updateRank',{data},{}).then((data) => {
+      console.log(data.status);
+      console.log(data.data); // data received by server
+      console.log(data.headers);
+
+    }).catch((error) => {
+      console.log(error.status);
+      console.log(error.error); // error message as string
+      console.log(error.headers);
+    });
+  }
+  sendSleepToServer(userName,sleep){
+    console.log('sendSleepToServer');
+    var data = {userName: userName,
+                sleep : sleep};
+
+    this.http.post('http://120.26.131.179:80/updateRank',{data},{}).then((data) => {
+      console.log(data.status);
+      console.log(data.data); // data received by server
+      console.log(data.headers);
+
+    }).catch((error) => {
+      console.log(error.status);
+      console.log(error.error); // error message as string
+      console.log(error.headers);
+    });
+  }
+
+  sendMoodToServer(userName,mood){
+    console.log('sendMoodToServer');
+    var data = {userName: userName,
+                mood : mood};
+
+    this.http.post('http://120.26.131.179:80/updateRank',{data},{}).then((data) => {
+      console.log(data.status);
+      console.log(data.data); // data received by server
+      console.log(data.headers);
+
+    }).catch((error) => {
+      console.log(error.status);
+      console.log(error.error); // error message as string
+      console.log(error.headers);
+    });
+  }
+
 }
 
 

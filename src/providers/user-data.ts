@@ -79,6 +79,66 @@ export class UserData {
     });
   }
 
+  setSex(sex: string): void {
+    this.storage.set('sex', sex);
+  }
+
+  getSex(): Promise<string> {
+    return this.storage.get('sex').then((value) => {
+      return value;
+    });
+  }
+
+  setAge(age: number): void {
+    this.storage.set('age', age);
+  }
+
+  getAge(): Promise<number> {
+    return this.storage.get('age').then((value) => {
+      return value;
+    });
+  }
+
+  setSchool(school: string): void {
+    this.storage.set('school', school);
+  }
+
+  getSchool(): Promise<string> {
+    return this.storage.get('school').then((value) => {
+      return value;
+    });
+  }
+
+  setGrade(grade: string): void {
+    this.storage.set('grade', grade);
+  }
+
+  getGrade(): Promise<string> {
+    return this.storage.get('grade').then((value) => {
+      return value;
+    });
+  }
+
+  setHeight(height: number): void {
+    this.storage.set('height', height);
+  }
+
+  getHeight(): Promise<number> {
+    return this.storage.get('height').then((value) => {
+      return value;
+    });
+  }
+
+  setWeight(weight: number): void {
+    this.storage.set('weight', weight);
+  }
+
+  getWeight(): Promise<number> {
+    return this.storage.get('weight').then((value) => {
+      return value;
+    });
+  }
+
   setUserPic(picUrl: string): void {
     this.storage.set('userPic', picUrl);
   }
@@ -143,12 +203,6 @@ export class UserData {
     });
   }
 
-  // checkHasSetStepTarget(): Promise<string> {
-  //   return this.storage.get(this.HAS_SET_STEP_TARGET).then((value) => {
-  //     return value;
-  //   });
-  // };
-
   setUpdateTime(date: Date): void {
     this.storage.set('UpdateTime', date);
   }
@@ -188,12 +242,6 @@ export class UserData {
       return value;
     });
   }
-
-  // getCurStatus(): Promise<string> {
-  //   return this.storage.get('username').then((name) => {
-  //
-  //   });
-  // }
 
   setNotiCall(open: boolean): void {
     this.storage.set('NotiCall', open);
@@ -235,5 +283,57 @@ export class UserData {
     });
   }
 
+  setSleepData(sleepData: number): void {
+    this.storage.set('sleepData', sleepData);
+  }
 
+  getSleepData(): Promise<string> {
+    return this.storage.get('sleepData').then((value) => {
+      return value;
+    });
+  }
+
+  setMoodScore(moodScore: number): void {
+    this.storage.set('moodScore', moodScore);
+  }
+
+  getMoodScore(): Promise<string> {
+    return this.storage.get('moodScore').then((value) => {
+      return value;
+    });
+  }
+
+  setPicNumber(picNumber: number): void {
+    this.storage.set('picNumber', picNumber);
+  }
+
+  getPicNumber(): Promise<number> {
+    return this.storage.get('picNumber').then((value) => {
+      return value;
+    });
+  }
+
+  setMoodPic(picUrl: string, num: number): void {
+    let name: string = 'moodPic' + num;
+    this.storage.set(name, picUrl);
+  }
+
+  getMoodPic(num: number): Promise<string> {
+    let name: string = 'moodPic' + num;
+    return this.storage.get(name).then((value) => {
+      return value;
+    });
+  }
+
+  setMoodSentance(content: string, num: number): void {
+    let name: string = 'moodContent' + num;
+    this.storage.set(name, content);
+  }
+
+  getMoodSentance(num: number): Promise<string> {
+    let name: string = 'moodContent' + num;
+    return this.storage.get(name).then((value) => {
+      return value;
+    });
+  }
 }

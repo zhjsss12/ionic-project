@@ -109,7 +109,6 @@ export class MyApp {
             this.userData.setUpdateTime(new Date("1970-1-1 0:0:0"));
             this.userData.setUserPic("http://www.gravatar.com/avatar?d=mm&s=140");
           }, 3000);
-          console.log('alababa')
           this.rootPage = LoginPage;
         }
       });
@@ -149,34 +148,34 @@ export class MyApp {
     });
   }
 
-  initializeApp() {
-    console.log("init...");
-    this.userdata.getDeviceNumber().then(
-      (value) => {
-        this.ble.isConnected(value).then(
-          (id) => {
-            this.platform.ready().then(() => {
-              // Okay, so the platform is ready and our plugins are available.
-              // Here you can do any higher level native things you might need.
-              this.statusBar.styleDefault();
-              this.splashScreen.hide();
-            });
-          }
-        ).catch(
-          (id) => this.loopConnect(id)
-        );
-      }
-    ).catch(
-
-      );
-
-    // this.platform.ready().then(() => {
-    //   // Okay, so the platform is ready and our plugins are available.
-    //   // Here you can do any higher level native things you might need.
-    //   this.statusBar.styleDefault();
-    //   this.splashScreen.hide();
-    // });
-  }
+  // initializeApp() {
+  //   console.log("init...");
+  //   this.userdata.getDeviceNumber().then(
+  //     (value) => {
+  //       this.ble.isConnected(value).then(
+  //         (id) => {
+  //           this.platform.ready().then(() => {
+  //             // Okay, so the platform is ready and our plugins are available.
+  //             // Here you can do any higher level native things you might need.
+  //             this.statusBar.styleDefault();
+  //             this.splashScreen.hide();
+  //           });
+  //         }
+  //       ).catch(
+  //         (id) => this.loopConnect(id)
+  //       );
+  //     }
+  //   ).catch(
+  //
+  //     );
+  //
+  //   // this.platform.ready().then(() => {
+  //   //   // Okay, so the platform is ready and our plugins are available.
+  //   //   // Here you can do any higher level native things you might need.
+  //   //   this.statusBar.styleDefault();
+  //   //   this.splashScreen.hide();
+  //   // });
+  // }
 
   openPage(page: PageInterface) {
     let params = {};
@@ -236,12 +235,13 @@ export class MyApp {
             var number;
             this.userData.getDeviceNumber().then((data)=>{
               number = data;
+              this.ble.disconnect(number).then((value)=>{
+                console.log(value);
+              }).catch((error)=>{
+                console.log(error);
+              });
             });
-            this.ble.disconnect(number).then((value)=>{
-              console.log(value);
-            }).catch((error)=>{
-              console.log(error);
-            });
+
             this.userData.disconnectRing();
             alert("您已与手环解除绑定");
           }else{

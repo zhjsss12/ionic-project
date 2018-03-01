@@ -20,11 +20,49 @@
     </ion-list>
 
     <ion-list inset>
+      <ion-list-header>机构设置</ion-list-header>
+      <ion-item>
+        <ion-label>选择学校和年级</ion-label>
+        <ion-select [(ngModel)]="school">
+          <ion-option *ngFor="let shl of schools;" [value]="shl" (click)="selectSchool()">{{ shl }}</ion-option>
+        </ion-select>
+        <ion-select id="grade" [(ngModel)]="grade">
+          <ion-option *ngFor="let gd of grades;" [value]="gd" >{{ gd }}</ion-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
+
+    <ion-list inset>
       <ion-list-header>个人信息</ion-list-header>
-      <button ion-item (click)="updatePicture()">选择性别</button>
-      <button ion-item (click)="changeUsername()">修改年龄</button>
-      <button ion-item (click)="changePassword()">修改身高</button>
-      <button ion-item (click)="support()">修改体重</button>
+      <!-- <button ion-item (click)="changeSex()">选择性别</button> -->
+      <!-- <button ion-item (click)="changeUserage()">修改年龄</button> -->
+      <ion-item>
+        <ion-label>选择性别</ion-label>
+        <ion-select popover [(ngModel)]="gender">
+          <ion-option value="f">女</ion-option>
+          <ion-option value="m">男</ion-option>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-label>选择年龄</ion-label>
+        <ion-select [(ngModel)]="age">
+          <ion-option *ngFor="let ag of ages;" [value]="ag">{{ ag }}岁</ion-option>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-label>修改身高</ion-label>
+        <ion-select [(ngModel)]="height">
+          <ion-option *ngFor="let ht of heights;" [value]="ht">{{ ht }}cm</ion-option>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-label>修改体重</ion-label>
+        <ion-select [(ngModel)]="weight">
+          <ion-option *ngFor="let wt of weights;" [value]="wt">{{ wt }}kg</ion-option>
+        </ion-select>
+      </ion-item>
+      <!-- <button ion-item (click)="changePassword()">修改身高</button>
+      <button ion-item (click)="support()">修改体重</button> -->
     </ion-list>
     <ion-list inset>
       <ion-list-header>登录设置</ion-list-header>

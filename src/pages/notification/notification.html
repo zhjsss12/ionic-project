@@ -9,7 +9,7 @@
 
 <ion-content class="outer-content">
 
-  <ion-list>
+  <!-- <ion-list>
     <ion-item>
       <span item-start class="dot"></span>
       <button ion-button clear icon-end (click)="jumpToSportNotice()" style="width:100%; font:13px">
@@ -25,7 +25,7 @@
       </button>
     </ion-item>
 
-  </ion-list>
+  </ion-list> -->
 
   <ion-list>
     <ion-item *ngFor="let track of tracks" [attr.track]="track.name | lowercase">

@@ -32,14 +32,16 @@ export class RunPage {
     setTimeout(() => {
       loader.dismiss();
     }, 3000);
-    this.dm.databaseInit();
+   
     console.log('run.ts  ionViewDidLoad ');
+    
+  }
+  ionViewWillEnter(){
+    console.log('run.ts  ionViewWillEnter ');
+    this.dm.databaseInit();
     this.ionChange();
   }
 
-  ionViewWillEnter(){
-    this.dm.databaseInit();
-  }
   renderday1(){
     var categoies = [];
     for (var i = 6; i >= 0; i--) {
@@ -58,10 +60,10 @@ export class RunPage {
         text: '最近七天运动数据',
         x: -20
       },
-      subtitle: {
-          text: 'subtitle',
-          x: -20
-      },
+      // subtitle: {
+      //     text: 'subtitle',
+      //     x: -20
+      // },
       plotOptions: {
         line: {
           dataLabels: {
@@ -126,10 +128,10 @@ export class RunPage {
         text: '最近30天运动数据',
         x: -20
       },
-      subtitle: {
-          text: 'subtitle',
-          x: -20
-      },
+      // subtitle: {
+      //     text: 'subtitle',
+      //     x: -20
+      // },
       plotOptions: {
         line: {
           dataLabels: {

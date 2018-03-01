@@ -51,8 +51,14 @@ export class GroupListPage {
 
   ionViewDidLoad() {
     this.app.setTitle('Schedule');
-    this.updateSchedule();
+    
+    // console.log('group-list');
     // this.hm.getSelfGroupFriends('二狗子');
+  }
+
+  ionViewWillEnter(){
+    this.updateSchedule();
+    console.log('group-list will enter');
   }
 
   updateSchedule() {
@@ -60,13 +66,16 @@ export class GroupListPage {
     this.scheduleList && this.scheduleList.closeSlidingItems();
 
 
-    this.confData.getTimeline(this.dayIndex, this.queryText, this.excludeTracks, this.segment).then( (data:any) =>{
+    this.confData.getTimeline(this.dayIndex, this.queryText, this.excludeTracks, this.segment).then( (data) =>{
       console.log('this.confData.getTimeline(this.dayIndex, this.queryText, this.excludeTracks, this.segment).then( (data:any) =>{ ',data);
-      this.groups = data;
-      this.shownSessions = data.show;
-    })
-
-
+      this.groups = data[0];
+      this.shownSessions = data[0].show;
+      this.user._favorites=[];
+      for (var i = 0; i < data[1].length; i++) {
+          this.user.addFavorite(data[1][i]);
+      }
+      console.log("this.user._favorites",this.user._favorites);
+    });
   }
 
   presentFilter() {
@@ -124,7 +133,7 @@ export class GroupListPage {
               if (sessionData.password == data.title) {
                 noPass.present();
                 // remember this session as a user favorite
-                this.user.addFavorite(sessionData.groupName);
+                // this.user.addFavorite(sessionData.groupName);
               }
               else{
                 enterFail.present();
@@ -187,8 +196,8 @@ export class GroupListPage {
           handler: () => {
             // they want to remove this session from their favorites
             this.user.removeFavorite(sessionData.groupName);
-            this.updateSchedule();
             this.hm.sendExitGroupToServer(sessionData.groupName);
+            this.updateSchedule();
             // close the sliding item and hide the option buttons
             slidingItem.close();
           }
@@ -234,3 +243,4 @@ export class GroupListPage {
     this.navCtrl.push(GroupCreatePage);
   }
 }
+

@@ -62,8 +62,22 @@ export class TargetPage {
       var day=date.getDate();
       categories.push(strMon+'-'+day);
     }
+    console.log('categories: ');
+    console.log(categories);
     this.dm.queryLastAse(7,['HH','II'],"0").then(
       (resultSet)=>{
+        for ( var i=0 ; i<resultSet.rows.length;i++) {
+            console.log(' for loop i = ', i);
+            var x= resultSet.rows.item(i);
+            var listAtr=[];
+            var listData=[];
+            for (var j in x) {
+              listAtr.push(j);
+              listData.push(x[j]);
+            }
+            console.log(listAtr);
+            console.log(listData);
+        }
         var run_data : number[] =[0,0,0,0,0,0,0];
         for (var i=0 ; i<resultSet.rows.length;i++) {
           var x= resultSet.rows.item(i);

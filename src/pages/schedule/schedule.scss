@@ -1,3 +1,10 @@
+.bg{
+  background-image: url("../assets/img/1.jpg");
+
+    background-repeat: no-repeat;
+  background-size: 100% 100%;
+  -moz-background-size:100% 100%;
+}
 $categories: (
  ionic: color($colors, primary),
  angular: #AC282B,
@@ -16,6 +23,7 @@ $total: 37;
 $angel: 360/($total - 1);
 .loading {
     //background: black;
+
     width: 80%;
     height: 60%;
     position: relative;

@@ -69,11 +69,11 @@ export class ConferenceData {
   getTimeline(dayIndex: number, queryText = '', excludeTracks: any[] = [], segment = 'all') {
     // return this.load().map((data: any) => {
       return this.hm.getGroup().then(
-        result => {
+        (result) => {
           console.log(result);
           let group = {
-            "show" : result.length,
-            "glist" : result
+            "show" : result[0].length,
+            "glist" : result[0]
           };
           for (var i = 0; i < group.glist.length; i++) {
             group.glist[i]['hide'] = false;
@@ -140,7 +140,7 @@ export class ConferenceData {
             }
           }
           // console.log(group)
-          return group;
+          return [group,result[1]];
         }
       );
 

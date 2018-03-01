@@ -9,33 +9,37 @@
 
 </ion-header>
 
-<ion-content>
-<!--
+<ion-content class="bg">
+
   <ion-refresher (ionRefresh)="doRefresh($event)">
-    <ion-refresher-content></ion-refresher-content>
+    <ion-refresher-content
+      pullingIcon="arrow-dropdown"
+      pullingText="下拉刷新"
+      refreshingSpinner="circles"
+      refreshingText="正在刷新..."></ion-refresher-content>
   </ion-refresher>
--->
 
-<div class="loading" id="top">
-  <div id="step">{{ step }}步</div>
-  <div class="ring">
-    <div class="piece" *ngFor="let i of steps"></div>
-    <div class="background" *ngFor="let i of targets"></div>
-  </div>
-  <div id="sleep">
-    <p>睡眠指数</p>
-    <p>{{ sleep }}</p>
-  </div>
-  <div id="mood">
-    <p>心情指数</p>
-    <p>{{ mood }}</p>
-  </div>
-  <div id="info">
-    <p>{{ pathLength }}km</p>
-    <p>{{ buring }}卡路里</p>
-  </div>
 
-</div>
+  <div class="loading" id="top">
+    <div id="step">{{ step }}步</div>
+    <div class="ring">
+      <div class="piece" *ngFor="let i of steps"></div>
+      <div class="background" *ngFor="let i of targets"></div>
+    </div>
+    <div id="sleep">
+      <p>睡眠指数</p>
+      <p>{{ sleep }}</p>
+    </div>
+    <div id="mood">
+      <p>心情指数</p>
+      <p>{{ mood }}</p>
+    </div>
+    <div id="info">
+      <p>{{ pathLength }}km</p>
+      <p>{{ buring }}卡路里</p>
+    </div>
+
+  </div>
   <ion-row style="">
     <ion-col  text-center>
       <button ion-button icon-only round (click)="xyx()">
@@ -67,11 +71,11 @@
 
   <ion-item>
       <button ion-button clear (click)="jumpToRank()"><h3 style="font-size:20px">查看排名</h3></button>
-      <ion-badge item-end>12</ion-badge>
+      <!-- <ion-badge item-end>12</ion-badge> -->
   </ion-item>
   <ion-item>
     <button ion-button clear (click)="jumpToTarget()"><h3 style="font-size:20px">查看目标</h3></button>
-    <ion-badge item-end>12</ion-badge>
+    <!-- <ion-badge item-end>12</ion-badge> -->
   </ion-item>
   <!-- <ion-item>
     <button ion-button clear><h3 style="font-size:20px" (click)="wowowo()">send</h3></button>

@@ -44,8 +44,8 @@ export class SchedulePage {
   steps: any = [];
   targets: any = [];
   target: number;
-  sleep = 2.3;
-  mood = 5.7;
+  sleep = '2.3';
+  mood = '5.7';
   pathLength = 0;
   buring :string = '0';
   devices : any[] = [];
@@ -59,6 +59,7 @@ export class SchedulePage {
   finish2 : boolean = false;
   keepUpdate: boolean = false;
   sendCount = 0;
+  loopCount: number = 0;
 
   constructor(
     public alertCtrl: AlertController,
@@ -79,10 +80,22 @@ export class SchedulePage {
     private hm: httpManager,
     private iab: InAppBrowser
     // private themeableBrowser: ThemeableBrowser
-  ) {}
+  ) {
+
+  }
   ionViewWillEnter(){
     this.db.databaseInit();
     console.log('进入了 首 页面');
+    this.userdata.getSleepData().then((value) => {
+      if(!(value==null)){
+        this.sleep = value;
+      }
+    });
+    this.userdata.getMoodScore().then((value) => {
+      if(!(value==null)){
+        this.mood = value;
+      }
+    });
   }
   ionViewDidLoad() {
     for(let i=0; i<36; i++){
@@ -191,9 +204,62 @@ export class SchedulePage {
     console.log('looping...');
     setTimeout(() => {
       this.ble.isEnabled().then(()=>{
-        return;
+        let loader = this.loadingCtrl.create({
+          content: "Please wait..."
+        });
+        loader.present();
+        setTimeout(() => {
+          this.scanCount = 25;
+          this.userdata.getDeviceNumber().then(
+            (value) => {
+              this.id = value;
+              // alert(this.id);
+              let time = 5;
+              let strs : string[] = ['fff0'];
+              this.ble.scan(strs, time).subscribe(
+                device => {
+                  if(device.id == this.id){
+                    this.deviceSelected(device.id);
+                  }else{
+                    time = 5;
+                  }
+                },
+                error => this.scanError(error)
+              );
+              setTimeout(this.setStatus.bind(this), 5000, 'Scan complete');
+              setTimeout(() => {
+                this.ble.isConnected(value).then((value) => {
+
+                }).catch((value) => {
+                  this.events.publish('transfarOver');
+                //   let toast = this.toastCtrl.create({
+                //     message: '连接手环失败',
+                //     duration: 500
+                //   });
+                //   toast.present();
+                });
+                loader.dismiss();
+              }, 5000);
+              // this.loopConnect(value);
+            }
+          ).catch(
+            () => console.log('error')
+          );
+        }, 10);
+
+        this.events.subscribe('transfarOver', () => {
+          setTimeout(() => {
+            loader.dismiss();
+            console.log('Finished');
+          },200);
+        });
       }).catch(() => {
-        this.loopJudgeBleOpen();
+        this.loopCount++;
+        if(this.loopCount<10){
+          this.loopJudgeBleOpen();
+        }else{
+          alert("蓝牙连接操作超时，请打开蓝牙后再下拉刷新页面");
+        }
       });
     }, 1000);
 
@@ -364,6 +430,10 @@ export class SchedulePage {
                 html = html + "</div><div id=\"sleep\"><p>睡眠指数</p><p>" + this.sleep + "</p></div><div id=\"mood\"><p>心情指数</p><p>"+this.mood+"</p></div><div id=\"info\"><p>"+(this.pathLength/100).toFixed(2)+"km</p><p>"+this.buring+"卡路里</p></div>" ;
                 document.getElementById('top').innerHTML = html;
                 this.finish = true;
+                this.userdata.getUsername().then(
+                  userName =>{
+                    this.hm.sendRunToServer(userName,+this.step);
+                });
                 // document.getElementById('top').innerHTML = "<div id=\"step\">{{ step }}步</div><div class=\"ring\"><div class=\"piece\" *ngFor=\"let i of steps\"></div><div class=\"background\" *ngFor=\"let i of targets\"></div></div><div id=\"sleep\"><p>睡眠指数</p><p>{{ sleep }}</p></div><div id=\"mood\"><p>心情指数</p><p>{{ mood }}</p></div><div id=\"info\"><p>{{ pathLength }}km</p><p>{{ buring }}卡路里</p></div>";
               }
             }
@@ -389,6 +459,11 @@ export class SchedulePage {
                 html = html + "</div><div id=\"sleep\"><p>睡眠指数</p><p>" + this.sleep + "</p></div><div id=\"mood\"><p>心情指数</p><p>"+this.mood+"</p></div><div id=\"info\"><p>"+(this.pathLength/100).toFixed(2)+"km</p><p>"+this.buring+"卡路里</p></div>" ;
                 document.getElementById('top').innerHTML = html;
                 this.finish = true;
+                this.userdata.getUsername().then(
+                  userName =>{
+                    this.hm.sendRunToServer(userName,+this.step);
+                });
+
               }else{
                 judge = true;
               }
@@ -416,11 +491,20 @@ export class SchedulePage {
                       let temp = Math.floor(data[i]/16)*10 + data[i]%16;
                       d.push(temp);
                     }else{
-                      d.push(data[i]);
+                      if(i == 8 || i == 10 || i == 12 || i == 14){
+                        if(data[i]>0x20 && data[6] == 0x00){
+                          d.push(0);
+                        }else{
+                          d.push(data[i]);
+                        }
+                      }else{
+                        d.push(data[i]);
+                      }
                     }
                   }
                   dc.setId(d[3]+d[2]*100+d[1]*10000+d[0]*1000000);
                   dc.setData(d);
+                  console.log(dc);
                   this.db.insert(dc).then(
                     (result)=>{
                       console.log(result);
@@ -439,7 +523,7 @@ export class SchedulePage {
                     d.push(temp);
                   }else{
                     if(i == 8 || i == 10 || i == 12 || i == 14){
-                      if(data[i]>0x20){
+                      if(data[i]>0x20 && data[6] == 0x00){
                         d.push(0);
                       }else{
                         d.push(data[i]);
@@ -686,5 +770,27 @@ export class SchedulePage {
   cmh(){
     var browser = this.iab.create('https://ionicframework.com/');
     browser.show();
+  }
+
+  doRefresh(refresher: Refresher) {
+    console.log('Begin refresh operation', refresher);
+
+    setTimeout(() => {
+      let judge: boolean = false;
+      this.events.subscribe('transfarOver', () => {
+        setTimeout(() => {
+          refresher.complete();
+          judge = true;
+          console.log('Finished');
+        },200);
+      });
+      this.dataUpdate();
+      setTimeout(() => {
+        if(!judge){
+          alert('刷新失败');
+        }
+        refresher.complete();
+      }, 5000);
+    }, 2000);
   }
 }
