@@ -453,9 +453,9 @@ export class SleepPage {
 
         this.user.getUsername().then(
           userName =>{
-            this.hm.sendSleepToServer(userName,sum[6]);
+            this.hm.sendSleepToServer(userName,sum[6]/60000);
           });
-        this.user.setSleepData(sum[6]);
+        this.user.setSleepData(sum[6]/60000);
 
         console.log('sleep.ts chart3 sum ' + sum);
         this.chart7.series[0].update({

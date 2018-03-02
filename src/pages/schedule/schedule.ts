@@ -44,8 +44,8 @@ export class SchedulePage {
   steps: any = [];
   targets: any = [];
   target: number;
-  sleep = '2.3';
-  mood = '5.7';
+  sleep = '0.4';
+  mood = '0.55';
   pathLength = 0;
   buring :string = '0';
   devices : any[] = [];
@@ -88,7 +88,7 @@ export class SchedulePage {
     console.log('进入了 首 页面');
     this.userdata.getSleepData().then((value) => {
       if(!(value==null)){
-        this.sleep = value;
+        this.sleep = ((+value)/60000).toFixed(2).toString();
       }
     });
     this.userdata.getMoodScore().then((value) => {

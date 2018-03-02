@@ -1,7 +1,6 @@
 .bg{
   background-image: url("../assets/img/1.jpg");
-
-    background-repeat: no-repeat;
+  background-repeat: no-repeat;
   background-size: 100% 100%;
   -moz-background-size:100% 100%;
 }
@@ -22,7 +21,7 @@ $total: 37;
 // 每个线条相差的角度
 $angel: 360/($total - 1);
 .loading {
-    //background: black;
+    background: transform;
 
     width: 80%;
     height: 60%;

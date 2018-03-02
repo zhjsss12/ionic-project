@@ -17,7 +17,7 @@ import { httpManager } from '../../providers/httpManager';
   templateUrl: 'mood.html',
 })
 export class MoodPage {
-  moodScore = "55";
+  moodScore = "0.55";
   picPath = "http://www.gravatar.com/avatar?d=mm&s=140";
   sentance = '说点啥吧';
   notes: Note[] = [];

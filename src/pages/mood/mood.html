@@ -24,7 +24,7 @@
   <div *ngSwitchCase="'new'" class="slide1">
     <div class="halo ring-1"></div>
     <!-- <div class="halo ring-2"></div> -->
-    <ion-label class="word">55</ion-label>
+    <ion-label class="word">0.55</ion-label>
     <ion-item class="input">
         <ion-label floating>一句话描述你的心情</ion-label>
         <ion-input type="text" [(ngModel)]="sentance"></ion-input>
@@ -39,12 +39,12 @@
     </div>
   </div>
 
-  <div *ngSwitchCase="'history'">
+  <div *ngSwitchCase="'history'" class="history">
     <ion-refresher (ionRefresh)="doRefresh($event)">
       <ion-refresher-content></ion-refresher-content>
     </ion-refresher>
     <ion-card *ngFor="let note of notes;">
-      <img [src]="note.pic" style=""/>
+      <img [src]="note.pic" style="height:30%"/>
       <ion-card-content>
         <ion-card-title>
           我的心情
