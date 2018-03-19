@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>意见反馈</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="outer-content">
+  <div padding-top text-center>
+    <h3>感谢您对我们的App提出宝贵的意见和建议！</h3>
+
+    <ion-list inset>
+      <ion-list-header>问题所在位置</ion-list-header>
+      <ion-item>
+        <ion-label>选择位置</ion-label>
+        <ion-select [(ngModel)]="location">
+          <ion-option *ngFor="let loc of locations;" [value]="loc">{{ loc }}</ion-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
+
+    <ion-list inset>
+      <ion-list-header>问题描述</ion-list-header>
+      <ion-textarea [(ngModel)]="description" placeholder="请输入文字描述"  rows="10" cols="40" style="background:white; "></ion-textarea>
+    </ion-list>
+    <button ion-button (click)="submit()">提交</button>
+  </div>
+</ion-content>

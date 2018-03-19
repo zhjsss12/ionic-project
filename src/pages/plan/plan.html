@@ -1,4 +1,4 @@
-<ion-header>
+﻿<ion-header>
   <ion-navbar color="primary">
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
@@ -8,22 +8,22 @@
 </ion-header>
 
 <ion-content class="outer-content">
-
-  <ion-list>
+<div padding-top text-center>
+  <ion-list inset>
     <ion-list-header>运动时间</ion-list-header>
     <button ion-item (click)="setSportTime()">设置运动时间</button>
   </ion-list>
-  <ion-list>
+  <ion-list inset>
     <ion-list-header>卡路里消耗</ion-list-header>
     <button ion-item (click)="setCalories()">设置卡路里消耗</button>
   </ion-list>
-  <ion-list>
+  <ion-list inset>
     <ion-list-header>步数</ion-list-header>
     <button ion-item (click)="setStep()">设置步数目标</button>
   </ion-list>
-  <ion-list>
+  <ion-list inset>
     <ion-list-header>运动距离</ion-list-header>
     <button ion-item (click)="setDistance()">设置运动距离</button>
   </ion-list>
-
+</div>
 </ion-content>

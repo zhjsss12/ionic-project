@@ -70,7 +70,7 @@ export class httpManager {
           password : data[3],
           userName : userName
         }};
-        console.log(body);        
+        console.log(body);
         this.http.post('http://120.26.131.179:80/createGroup', {body}, {}).then(data => {
           console.log('statu: '+data.status);
           console.log('send data: '+data.data);
@@ -91,7 +91,7 @@ export class httpManager {
   //发送用户加群信息给服务器
   sendEnterGroupToServer(groupName){
       this.userData.getUsername().then((userName) => {
-        var body : any = { 
+        var body : any = {
           userName : userName,
           groupName : groupName,
         };
@@ -111,7 +111,7 @@ export class httpManager {
   //发送用户加群信息给服务器
   sendExitGroupToServer(groupName){
       this.userData.getUsername().then((userName) => {
-        var body : any = { 
+        var body : any = {
           userName : userName,
           groupName : groupName,
         };
@@ -132,7 +132,7 @@ export class httpManager {
   getGroup():Promise<any>{
     return new Promise((resolve,reject)=>{
       this.userData.getUsername().then((userName) => {
-        var body : any = { 
+        var body : any = {
           userName : userName
         };
         this.http.post('http://120.26.131.179:80/getGroup', {body}, {})
@@ -211,23 +211,47 @@ export class httpManager {
     });
   }
 
-  sendMoodToServer(userName,mood){
-    console.log('sendMoodToServer');
-    var data = {userName: userName,
-                mood : mood};
 
-    this.http.post('http://120.26.131.179:80/updateRank',{data},{}).then((data) => {
-      console.log(data.status);
-      console.log(data.data); // data received by server
-      console.log(data.headers);
+  //发送意见给服务器
+  sendSuggestionToServer(loc, text){
+    this.userData.getUsername().then((name)=>{
+      var body : any = {
+        name : name,
+        location : loc,
+        suggestion : text,
+      };
+      console.log('sendSuggestionToServer');
+      console.log(body);
+      this.http.post('http://120.26.131.179:80/uploadAdvice', {body}, {}).then(data => {
+        console.log('statu: '+data.status);
+        console.log('send data: '+data.data);
 
-    }).catch((error) => {
-      console.log(error.status);
-      console.log(error.error); // error message as string
-      console.log(error.headers);
+      }).catch(error => {
+        console.log('error statu: '+error.status);
+        console.log('error: '+error.error);
+      });
     });
+
+
   }
 
+  sendMoodToServer(userName,sentence): Promise<any>{
+    console.log('sendMoodToServer');
+    var data = {userName: userName,
+                sentence : sentence};
+    return new Promise((resolve,reject)=>{
+      this.http.post('http://120.26.131.179:80/uploadSentence',{data},{}).then((data) => {
+        console.log(data.status);
+        console.log(data.data); // data received by server
+        resolve(data.data);
+        console.log(data.headers);
+
+      }).catch((error) => {
+        console.log(error.status);
+        reject(error.error);
+        console.log(error.error); // error message as string
+        console.log(error.headers);
+      });
+    });
+  }
 }
-
-

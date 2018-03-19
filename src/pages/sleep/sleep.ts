@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
-
 import {
   ActionSheet,
   ActionSheetController,
   ActionSheetOptions,
   Config,
   NavController,
-  LoadingController
+  LoadingController,
+  Events
 } from 'ionic-angular';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { httpManager } from '../../providers/httpManager';
@@ -33,6 +33,7 @@ export class SleepPage {
   chart:any;
   chart7:any;
   specific: any;
+  test: any;
   constructor(
     public actionSheetCtrl: ActionSheetController,
     public navCtrl: NavController,
@@ -43,6 +44,7 @@ export class SleepPage {
     public dm:databaseManager,
     public loadingCtrl: LoadingController,
     public user: UserData,
+    public events: Events,
     private hm: httpManager,
   ) {}
 
@@ -54,13 +56,15 @@ export class SleepPage {
     loader.present();
     setTimeout(() => {
       loader.dismiss();
-    }, 3000);
+    }, 1000);
   }
   ionViewWillEnter(){
     this.dm.databaseInit();
-    this.render1();
-    this.render2();
+    setTimeout(() => {
     this.render3();
+    this.render2();
+    this.render1();
+    }, 300);
     console.log('进入了 sleep 页面');
   }
   // test(){
@@ -453,9 +457,11 @@ export class SleepPage {
 
         this.user.getUsername().then(
           userName =>{
-            this.hm.sendSleepToServer(userName,sum[6]/60000);
+            this.hm.sendSleepToServer(userName,Math.round(sum[6]/6000)/10);
           });
-        this.user.setSleepData(sum[6]/60000);
+        this.user.setSleepData(Math.round(sum[6]/6000)/10);
+        this.events.publish('sleepChanged');
+        console.log('this.user.setSleepData(sum[6]/60000);',Math.round(sum[6]/6000)/10)
 
         console.log('sleep.ts chart3 sum ' + sum);
         this.chart7.series[0].update({
@@ -480,5 +486,4 @@ export class SleepPage {
         console.log("sleep.ts " + Error);
     });
   }
-
 }

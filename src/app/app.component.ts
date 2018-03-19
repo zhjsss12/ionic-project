@@ -24,6 +24,8 @@ import { bleManager } from '../providers/bleManager';
 import { BLE } from '@ionic-native/ble';
 import { Injectable } from '@angular/core';
 import { GroupListPage } from '../pages/group-list/group-list';
+import { SuggestionPage } from '../pages/suggestion/suggestion';
+// import { AppUpdate } from '@ionic-native/app-update';
 export interface PageInterface {
   title: string;
   name: string;
@@ -51,7 +53,8 @@ export class MyApp {
     { title: '个人信息', name: 'AccountPage', component: AccountPage, icon: 'person' },
     { title: '个人计划', name: 'PlanPage', component: PlanPage, icon: 'contacts' },
     { title: '通知提醒', name: 'NotificationPage', component: NotificationPage, icon: 'map' },
-    { title: '社区', name: 'GroupListPage', component: GroupListPage, icon: 'map' }
+    { title: '社区', name: 'GroupListPage', component: GroupListPage, icon: 'map' },
+    { title: '意见和建议', name: 'SuggestionPage', component: SuggestionPage, icon: 'map' }
     // { title: 'About', name: 'TabsPage', component: TabsPage, tabComponent: AboutPage, index: 3, icon: 'information-circle' },
     // { title: 'Hello', name: 'TabsPage', component: TabsPage, tabComponent: HelloIonicPage, index: 4, icon: 'hello' }
   ];
@@ -87,8 +90,11 @@ export class MyApp {
     private ngZone: NgZone,
     public userdata: UserData,
     public toastCtrl: ToastController,
-    private bm: bleManager
+    private bm: bleManager,
+    // private appUpdate: AppUpdate
   ) {
+    // const updateUrl = 'http://120.26.131.179:80/update';
+    // this.appUpdate.checkAppUpdate(updateUrl);
     this.storage.get('hasLoggedIn')
       .then((hasLoggedIn) => {
         if (hasLoggedIn) {
@@ -244,8 +250,12 @@ export class MyApp {
 
             this.userData.disconnectRing();
             alert("您已与手环解除绑定");
+            this.events.publish('isRingUnConnected');
+            this.nav.setRoot(TabsPage);
           }else{
             this.connectToRing();
+            this.events.publish('isRingConnected');
+            this.nav.setRoot(TabsPage);
           }
         });
     }

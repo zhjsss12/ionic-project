@@ -4,20 +4,24 @@
       <ion-icon name="menu"></ion-icon>
     </button>
     <ion-title>首页</ion-title>
-
+    <ion-buttons end  *ngIf="isRingConnected">
+      <button ion-button (click)="ringStatusChange()">
+        <span >{{ isRingConnected }}</span>
+      </button>
+    </ion-buttons>
   </ion-navbar>
 
 </ion-header>
 
 <ion-content class="bg">
 
-  <ion-refresher (ionRefresh)="doRefresh($event)">
+<!--   <ion-refresher (ionRefresh)="doRefresh($event)">
     <ion-refresher-content
       pullingIcon="arrow-dropdown"
       pullingText="下拉刷新"
       refreshingSpinner="circles"
       refreshingText="正在刷新..."></ion-refresher-content>
-  </ion-refresher>
+  </ion-refresher> -->
 
 
   <div class="loading" id="top">
@@ -26,11 +30,11 @@
       <div class="piece" *ngFor="let i of steps"></div>
       <div class="background" *ngFor="let i of targets"></div>
     </div>
-    <div id="sleep">
-      <p>睡眠指数</p>
+    <div id="sleep" *ngIf="sleep">
+      <p>睡眠质量</p>
       <p>{{ sleep }}</p>
     </div>
-    <div id="mood">
+    <div id="mood" *ngIf="mood">
       <p>心情指数</p>
       <p>{{ mood }}</p>
     </div>
@@ -65,7 +69,7 @@
       心愿墙
     </ion-col>
     <ion-col  text-center>
-      开心生活
+      心分享
     </ion-col>
   </ion-row>
 

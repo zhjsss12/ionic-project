@@ -60,7 +60,13 @@ export class TargetPage {
         strMon = ''+mon;
       }
       var day=date.getDate();
-      categories.push(strMon+'-'+day);
+      var strDay = ''
+      if(day<10){
+        strDay = '0'+day;
+      }else{
+        strDay = ''+day;
+      }
+      categories.push(strMon+'-'+strDay);
     }
     console.log('categories: ');
     console.log(categories);
@@ -82,6 +88,7 @@ export class TargetPage {
         for (var i=0 ; i<resultSet.rows.length;i++) {
           var x= resultSet.rows.item(i);
           for (var j in categories) {
+            console.log(categories[j]+'  '+x["datee"].substring(5,10));
             if (categories[j] == x["datee"].substring(5,10)) {
               run_data[j]=x["sum(II)"]*256+x["sum(HH)"];
             }

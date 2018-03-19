@@ -325,12 +325,12 @@ export class UserData {
     });
   }
 
-  setMoodSentance(content: string, num: number): void {
+  setMoodSentence(content: string, num: number): void {
     let name: string = 'moodContent' + num;
     this.storage.set(name, content);
   }
 
-  getMoodSentance(num: number): Promise<string> {
+  getMoodSentence(num: number): Promise<string> {
     let name: string = 'moodContent' + num;
     return this.storage.get(name).then((value) => {
       return value;

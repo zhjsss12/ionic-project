@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, Refresher, Events } from 'ionic-angular';
+import { AlertController,IonicPage, NavController, NavParams, Refresher, Events } from 'ionic-angular';
 import { UserData } from '../../providers/user-data';
 import { ImagePicker } from '@ionic-native/image-picker';
 import { Note } from '../../entity/Note';
@@ -17,12 +17,13 @@ import { httpManager } from '../../providers/httpManager';
   templateUrl: 'mood.html',
 })
 export class MoodPage {
-  moodScore = "0.55";
+  moodScore :string ="0.6";
   picPath = "http://www.gravatar.com/avatar?d=mm&s=140";
-  sentance = '说点啥吧';
+  sentence = '说点啥吧';
   notes: Note[] = [];
   isHistory: string = "new";
   constructor(public navCtrl: NavController,
+              public alertCtrl: AlertController,
               public user: UserData,
               private imagePicker: ImagePicker,
               public navParams: NavParams,
@@ -31,11 +32,11 @@ export class MoodPage {
   }
 
   ionViewDidLoad() {
-    this.user.getUsername().then(
-      userName =>{
-        this.hm.sendMoodToServer(userName,+this.moodScore);
-      });
-    this.user.setMoodScore(+this.moodScore);
+    // this.user.getUsername().then(
+    //   userName =>{
+    //     this.hm.sendMoodToServer(userName,+this.moodScore);
+    //   });
+    // this.user.setMoodScore(+this.moodScore);
     console.log('ionViewDidLoad MoodPage');
     // this.events.publish('moodChanged');
     let number = 0;
@@ -48,7 +49,7 @@ export class MoodPage {
           this.user.getMoodPic(i).then((value) => {
             note.pic = value;
             console.log('picUrl: '+value+'  ||  number: '+i);
-            this.user.getMoodSentance(i).then((content) => {
+            this.user.getMoodSentence(i).then((content) => {
               note.sent = content;
               this.notes.push(note);
               console.log('sent: '+content+'  ||  number: '+i);
@@ -85,24 +86,71 @@ export class MoodPage {
   }
 
   OnClick(){
+    this.user.getUsername().then((userName)=>{
+      this.hm.sendMoodToServer(userName,this.sentence).then((score)=>{
+        this.moodScore=score.substr(0,3);
+        this.user.setMoodScore(+this.moodScore);
+        this.events.publish('moodChanged');
+      });
+    });
+
     this.user.getPicNumber().then((value) => {
       if(!(value==null)){
         let number: number = value + 1;
         this.user.setPicNumber(number);
         this.user.setMoodPic(this.picPath, number);
-        this.user.setMoodSentance(this.sentance, number);
-        console.log(this.sentance+"  ||  "+this.picPath+"  ||  "+number);
-        alert('提交成功');
+        this.user.setMoodSentence(this.sentence, number);
+        console.log(this.sentence+"  ||  "+this.picPath+"  ||  "+number);
+        // alert('提交成功');
+        let ok = this.alertCtrl.create({
+        title: '提交成功',
+        buttons: [{
+          text: '确定',
+          }]
+        });
+        ok.present();
       }else{
         let number: number = 1;
         this.user.setPicNumber(number);
         this.user.setMoodPic(this.picPath, number);
-        this.user.setMoodSentance(this.sentance, number);
-        console.log(this.sentance+"  ||  "+this.picPath+"  ||  "+number);
-        alert('提交成功');
+        this.user.setMoodSentence(this.sentence, number);
+        console.log(this.sentence+"  ||  "+this.picPath+"  ||  "+number);
+        let ok = this.alertCtrl.create({
+        title: '提交成功',
+        buttons: [{
+          text: '确定',
+          }]
+        });
+        ok.present();
       }
     });
 
+  }
+  ionChange(){
+    if(this.isHistory == 'history'){
+      let number = 0;
+      this.notes = [];
+      this.user.getPicNumber().then((value) => {
+        if(!(value==null)){
+          number = value;
+          for(let i=1;i<=number;i++){
+            let note = new Note();
+            this.user.getMoodPic(i).then((value) => {
+              note.pic = value;
+              this.user.getMoodSentence(i).then((content) => {
+                note.sent = content;
+                this.notes.push(note);
+                if(this.notes.length == number){
+                  this.events.publish('refreshFinished');
+                }
+              })
+            });
+
+          }
+
+        }
+      });
+    }
   }
 
   doRefresh(refresher: Refresher) {
@@ -122,7 +170,7 @@ export class MoodPage {
             let note = new Note();
             this.user.getMoodPic(i).then((value) => {
               note.pic = value;
-              this.user.getMoodSentance(i).then((content) => {
+              this.user.getMoodSentence(i).then((content) => {
                 note.sent = content;
                 this.notes.push(note);
                 if(this.notes.length == number){

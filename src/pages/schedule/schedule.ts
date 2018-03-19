@@ -1,4 +1,4 @@
-import { Component, ViewChild , NgZone} from '@angular/core';
+﻿import { Component, ViewChild , NgZone} from '@angular/core';
 import { BLE } from '@ionic-native/ble';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { Events, AlertController, App, FabContainer, ItemSliding, List, ModalController, NavController, ToastController, LoadingController, Refresher } from 'ionic-angular';
@@ -45,7 +45,7 @@ export class SchedulePage {
   targets: any = [];
   target: number;
   sleep = '0.4';
-  mood = '0.55';
+  mood = '0.6';
   pathLength = 0;
   buring :string = '0';
   devices : any[] = [];
@@ -60,6 +60,7 @@ export class SchedulePage {
   keepUpdate: boolean = false;
   sendCount = 0;
   loopCount: number = 0;
+  isRingConnected: string = "!手环未连接";
 
   constructor(
     public alertCtrl: AlertController,
@@ -81,21 +82,49 @@ export class SchedulePage {
     private iab: InAppBrowser
     // private themeableBrowser: ThemeableBrowser
   ) {
-
+    this.events.subscribe('isRingConnected', () => {
+      this.isRingConnected = "手环已连接";
+    });
+    this.events.subscribe('isRingUnConnected', () => {
+      this.isRingConnected = "!手环未连接";
+    });
+    this.events.subscribe('sleepChanged', () => {
+      this.userdata.getSleepData().then((value)=>{
+        if(!(value==null)){
+          this.sleep = value;
+        }
+      });
+    });
+    this.events.subscribe('moodChanged', () => {
+      this.userdata.getMoodScore().then((value)=>{
+        if(!(value==null)){
+          this.mood = value;
+        }
+      });
+    });
   }
   ionViewWillEnter(){
     this.db.databaseInit();
     console.log('进入了 首 页面');
     this.userdata.getSleepData().then((value) => {
+      console.log(value);
       if(!(value==null)){
-        this.sleep = ((+value)/60000).toFixed(2).toString();
+        this.sleep = value;
       }
     });
     this.userdata.getMoodScore().then((value) => {
       if(!(value==null)){
-        this.mood = value;
+        this.mood = value ;
       }
     });
+    this.storage.get('hasConnectRing')
+      .then((hasConnectRing) => {
+        if (hasConnectRing) {
+          this.isRingConnected = "手环已连接";
+        }else{
+          this.isRingConnected = "!手环未连接";
+        }
+      });
   }
   ionViewDidLoad() {
     for(let i=0; i<36; i++){
@@ -258,7 +287,8 @@ export class SchedulePage {
         if(this.loopCount<10){
           this.loopJudgeBleOpen();
         }else{
-          alert("蓝牙连接操作超时，请打开蓝牙后再下拉刷新页面");
+          //alert("蓝牙连接操作超时，请打开蓝牙后再下拉刷新页面");
+          alert("蓝牙连接操作超时，将在下次同步数据");
         }
       });
     }, 1000);
@@ -349,6 +379,7 @@ export class SchedulePage {
       text: 'OK',
       handler: data => {
         this.userdata.connectRing(data);
+        this.events.publish('isRingConnected');
         this.deviceSelected(data);
       }
     });
@@ -427,7 +458,7 @@ export class SchedulePage {
                 for(let i=0; i<this.targets.length;i++){
                   html = html + "<div class=\"background\></div>";
                 }
-                html = html + "</div><div id=\"sleep\"><p>睡眠指数</p><p>" + this.sleep + "</p></div><div id=\"mood\"><p>心情指数</p><p>"+this.mood+"</p></div><div id=\"info\"><p>"+(this.pathLength/100).toFixed(2)+"km</p><p>"+this.buring+"卡路里</p></div>" ;
+                html = html + "</div><div id=\"sleep\" *ngIf=\"sleep\"><p>睡眠质量</p><p>" + this.sleep + "</p></div><div id=\"mood\"  *ngIf=\"mood\"><p>心情指数</p><p>"+this.mood+"</p></div><div id=\"info\"><p>"+(this.pathLength/100).toFixed(2)+"km</p><p>"+this.buring+"卡路里</p></div>" ;
                 document.getElementById('top').innerHTML = html;
                 this.finish = true;
                 this.userdata.getUsername().then(
@@ -456,7 +487,7 @@ export class SchedulePage {
                 for(let i=0; i<this.targets.length;i++){
                   html = html + "<div class=\"background\"></div>";
                 }
-                html = html + "</div><div id=\"sleep\"><p>睡眠指数</p><p>" + this.sleep + "</p></div><div id=\"mood\"><p>心情指数</p><p>"+this.mood+"</p></div><div id=\"info\"><p>"+(this.pathLength/100).toFixed(2)+"km</p><p>"+this.buring+"卡路里</p></div>" ;
+                html = html + "</div><div id=\"sleep\" *ngIf=\"sleep\"><p>睡眠质量</p><p>" + this.sleep + "</p></div><div id=\"mood\" *ngIf=\"mood\"><p>心情指数</p><p>"+this.mood+"</p></div><div id=\"info\"><p>"+(this.pathLength/100).toFixed(2)+"km</p><p>"+this.buring+"卡路里</p></div>" ;
                 document.getElementById('top').innerHTML = html;
                 this.finish = true;
                 this.userdata.getUsername().then(
@@ -760,16 +791,31 @@ export class SchedulePage {
     this.navCtrl.push(TargetPage)
   }
   xyx(){
-    var browser = this.iab.create('https://ionicframework.com/');
-    browser.show();
+    // var browser = this.iab.create('https://ionicframework.com/');
+    // browser.show();
+    let alert = this.alertCtrl.create({
+      title: '尚未开放敬请期待！',
+      buttons: ['好的']
+    });
+    alert.present();
   }
   hxh(){
-    var browser = this.iab.create('https://ionicframework.com/');
-    browser.show();
+    // var browser = this.iab.create('https://ionicframework.com/');
+    // browser.show();
+    let alert = this.alertCtrl.create({
+      title: '尚未开放敬请期待！',
+      buttons: ['好的']
+    });
+    alert.present();
   }
   cmh(){
-    var browser = this.iab.create('https://ionicframework.com/');
-    browser.show();
+    // var browser = this.iab.create('https://ionicframework.com/');
+    // browser.show();
+    let alert = this.alertCtrl.create({
+      title: '尚未开放敬请期待！',
+      buttons: ['好的']
+    });
+    alert.present();
   }
 
   doRefresh(refresher: Refresher) {
@@ -792,5 +838,16 @@ export class SchedulePage {
         refresher.complete();
       }, 5000);
     }, 2000);
+  }
+
+  ringStatusChange(){
+    if(this.isRingConnected== "!手环未连接"){
+    let alert = this.alertCtrl.create({
+      title: '您尚未连接手环！',
+      subTitle: '请点击左侧侧边栏里的 绑定手环/解除绑定 按钮连接手环',
+      buttons: ['好的']
+    });
+    alert.present();}else{
+    }
   }
 }

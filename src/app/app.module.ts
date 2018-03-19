@@ -36,6 +36,8 @@ import { MoodPage } from '../pages/mood/mood';
 import { NotificationPage } from '../pages/notification/notification';
 import { GroupCreatePage } from '../pages/group-create/group-create';
 import { GroupListPage } from '../pages/group-list/group-list';
+import { SuggestionPage } from '../pages/suggestion/suggestion';
+
 import { ConferenceData } from '../providers/conference-data';
 import { UserData } from '../providers/user-data';
 import { databaseManager } from '../providers/databaseManager';
@@ -44,7 +46,7 @@ import { httpManager } from '../providers/httpManager';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { ImagePicker } from '@ionic-native/image-picker';
-
+// import { AppUpdate } from '@ionic-native/app-update';
 @NgModule({
   declarations: [
     MyApp,
@@ -71,7 +73,8 @@ import { ImagePicker } from '@ionic-native/image-picker';
     RankPage,
     TargetPage,
     GroupCreatePage,
-    GroupListPage
+    GroupListPage,
+    SuggestionPage
   ],
   imports: [
     BrowserModule,
@@ -99,7 +102,8 @@ import { ImagePicker } from '@ionic-native/image-picker';
         { component: RunPage, name: 'RunPage', segment: 'run' },
         { component: RankPage, name: 'RankPage', segment: 'rank' },
         { component: TargetPage, name: 'TargetPage', segment: 'target'},
-        { component: GroupListPage, name: 'GroupListPage', segment: 'group-list'}
+        { component: GroupListPage, name: 'GroupListPage', segment: 'group-list'},
+        { component: SuggestionPage, name: 'SuggestionPage', segment: 'suggestion'}
       ]
     }),
     IonicStorageModule.forRoot()
@@ -130,7 +134,8 @@ import { ImagePicker } from '@ionic-native/image-picker';
     RankPage,
     TargetPage,
     GroupCreatePage,
-    GroupListPage
+    GroupListPage,
+    SuggestionPage
   ],
   providers: [
     StatusBar,
@@ -147,6 +152,7 @@ import { ImagePicker } from '@ionic-native/image-picker';
     bleManager,
     httpManager,
     ImagePicker,
+    // AppUpdate,
     // ThemeableBrowser,
     // ThemeableBrowserObject,
     {provide: ErrorHandler, useClass: IonicErrorHandler}

@@ -10,7 +10,7 @@
 
 <ion-content no-padding>
   <div padding>
-  <ion-segment [(ngModel)]="isHistory">
+  <ion-segment [(ngModel)]="isHistory" (ionChange)="ionChange()">
     <ion-segment-button value="new">
       心情
     </ion-segment-button>
@@ -24,25 +24,25 @@
   <div *ngSwitchCase="'new'" class="slide1">
     <div class="halo ring-1"></div>
     <!-- <div class="halo ring-2"></div> -->
-    <ion-label class="word">0.55</ion-label>
+    <ion-label class="word" *ngIf="moodScore">{{moodScore}}</ion-label>
     <ion-item class="input">
         <ion-label floating>一句话描述你的心情</ion-label>
-        <ion-input type="text" [(ngModel)]="sentance"></ion-input>
+        <ion-input type="text" [(ngModel)]="sentence"></ion-input>
     </ion-item>
     <ion-item class="input">
         <button ion-button clear (click)="addPic()"><h3>点此添加图片</h3></button>
         <!-- <ion-badge item-end>12</ion-badge> -->
     </ion-item>
-    <img [src]="picPath" style="max-width: 140px; margin-left:10%">
+    <img [src]="picPath"  alt="avatar" style="max-width: 200px; margin-left:100px; left:50%; margin-top: 10px" >
     <div padding>
         <button ion-button color="primary" block (click)="OnClick()">提交</button>
     </div>
   </div>
 
   <div *ngSwitchCase="'history'" class="history">
-    <ion-refresher (ionRefresh)="doRefresh($event)">
+    <!-- <ion-refresher (ionRefresh)="doRefresh($event)">
       <ion-refresher-content></ion-refresher-content>
-    </ion-refresher>
+    </ion-refresher> -->
     <ion-card *ngFor="let note of notes;">
       <img [src]="note.pic" style="height:30%"/>
       <ion-card-content>

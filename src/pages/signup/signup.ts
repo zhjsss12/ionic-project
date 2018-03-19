@@ -27,8 +27,8 @@ export class SignupPage {
     if (form.valid) {
       this.http.post('http://120.26.131.179:80/login', {body}, {}).then(data => {
 
-      alert(data.status);
-      alert(data.data); // data received by server
+      //alert(data.status);
+      //alert(data.data); // data received by server
       //alert(data.headers);
 	  if(data.data == '2'){
       this.userData.signup(this.signup.name);
@@ -42,9 +42,9 @@ export class SignupPage {
     })
     .catch(error => {
 
-      alert(error.status);
-      alert(error.error); // error message as string
-      alert(error.headers);
+      //alert(error.status);
+      //alert(error.error); // error message as string
+      //alert(error.headers);
 
     });
 

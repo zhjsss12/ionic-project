@@ -13,12 +13,12 @@ export class RunPage {
   //设置默认seg
   segment: string = "30day";
   chart7: any;
-  chart30: any; 
+  chart30: any;
   average7: number = 0;
   average30: number = 0;
   sum7: number = 0;
   sum30: number = 0;
-  constructor(public navCtrl: NavController, 
+  constructor(public navCtrl: NavController,
               public loadingCtrl: LoadingController,
               public navParams: NavParams,
               public dm:databaseManager,) {}
@@ -31,10 +31,10 @@ export class RunPage {
     loader.present();
     setTimeout(() => {
       loader.dismiss();
-    }, 3000);
-   
+    }, 1000);
+
     console.log('run.ts  ionViewDidLoad ');
-    
+
   }
   ionViewWillEnter(){
     console.log('run.ts  ionViewWillEnter ');
@@ -85,15 +85,15 @@ export class RunPage {
         }],
         labels: {
           formatter:function(){
-            if(this.value <=5000) { 
+            if(this.value <=5000) {
               return this.value;
-            }else if(this.value >5000 && this.value <=10000) { 
+            }else if(this.value >5000 && this.value <=10000) {
               return this.value;
-            }else { 
+            }else {
               return this.value;
             }
           }
-        }    
+        }
       },
       tooltip: {
           valueSuffix: 'm'
@@ -108,7 +108,7 @@ export class RunPage {
         name: '步数',
         data: [5535,5654,451,2124,4579,1249,1547]
       }]
-    });   
+    });
   }
   renderday2(){
     var categoies1 = [];
@@ -153,15 +153,15 @@ export class RunPage {
         }],
         labels: {
           formatter:function(){
-            if(this.value <=5000) { 
+            if(this.value <=5000) {
               return this.value;
-            }else if(this.value >5000 && this.value <=10000) { 
+            }else if(this.value >5000 && this.value <=10000) {
               return this.value;
-            }else { 
+            }else {
               return this.value;
             }
           }
-        }    
+        }
       },
       tooltip: {
           valueSuffix: 'm'
@@ -185,8 +185,8 @@ export class RunPage {
       var cnt=0;
       var time = setInterval(function(){
         cnt++;
-        var obj = document.getElementById("container7"); 
-        if (obj||cnt>30){ 
+        var obj = document.getElementById("container7");
+        if (obj||cnt>30){
           clearInterval(time);
           console.log("find 7day");
           self.renderday1();
@@ -200,8 +200,8 @@ export class RunPage {
     else if(this.segment=="30day"){
       var cnt=0;
       var time = setInterval(function(){
-        var obj = document.getElementById("container30"); 
-        if (obj||cnt>30){ 
+        var obj = document.getElementById("container30");
+        if (obj||cnt>30){
           clearInterval(time);
           console.log("find 30day");
           self.renderday2();
@@ -249,7 +249,7 @@ export class RunPage {
 
         var run_data : number[] =[0,0,0,0,0,0,0];
 
-          
+
         for (var i=0 ; i<resultSet.rows.length;i++) {
           // console.log(categories1);
           var x= resultSet.rows.item(i);
@@ -259,7 +259,7 @@ export class RunPage {
               run_data[j]=x["sum(II)"]*256+x["sum(HH)"];
             }
           }
-        }        
+        }
         var cnt=0;
         var sum=0;
         for (var i = 0; i < 7; i++) {
@@ -271,7 +271,7 @@ export class RunPage {
         if (cnt>0) {
           this.average7= Math.round(sum/cnt);
         }
-        else this.average7= 0; 
+        else this.average7= 0;
         this.sum7=sum;
         console.log("run.ts run_data7 \n" + run_data)
         this.chart7.series[0].update({
@@ -301,7 +301,7 @@ export class RunPage {
       }
       else{
         tmp+=(day.toString());
-      }      
+      }
       categories.push(tmp);
     }
     console.log(categories);
@@ -322,7 +322,7 @@ export class RunPage {
               run_data[j]=x["sum(II)"]*256+x["sum(HH)"];
             }
           }
-        }         
+        }
         var cnt=0;
         var sum=0;
         for (var i = 0; i < 30; i++) {
@@ -334,12 +334,12 @@ export class RunPage {
         if (cnt>0) {
           this.average30= Math.round(sum/cnt);
         }
-        else this.average30= 0; 
-        this.sum30 = sum; 
+        else this.average30= 0;
+        this.sum30 = sum;
         console.log("run.ts run_data30 \n" + run_data)
         this.chart30.series[0].update({
           name: '步数',
-          data:run_data});  
+          data:run_data});
         this.chart30.redraw();
       }
     );
