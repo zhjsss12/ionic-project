@@ -10,6 +10,10 @@ import { IonicStorageModule } from '@ionic/storage';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { HttpModule } from '@angular/http';
 import { SQLite } from '@ionic-native/sqlite';
+import { AppUpdate } from '@ionic-native/app-update';
+import { AppVersion } from '@ionic-native/app-version';
+import { FileOpener } from '@ionic-native/file-opener';
+import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
 // import { ThemeableBrowser, ThemeableBrowserOptions, ThemeableBrowserObject } from '@ionic-native/themeable-browser';
 
 import { HelloIonicPage } from '../pages/hello-ionic/hello-ionic';
@@ -37,6 +41,7 @@ import { NotificationPage } from '../pages/notification/notification';
 import { GroupCreatePage } from '../pages/group-create/group-create';
 import { GroupListPage } from '../pages/group-list/group-list';
 import { SuggestionPage } from '../pages/suggestion/suggestion';
+import { NativeService } from './../providers/NativeService';
 
 import { ConferenceData } from '../providers/conference-data';
 import { UserData } from '../providers/user-data';
@@ -148,11 +153,15 @@ import { ImagePicker } from '@ionic-native/image-picker';
     BLE,
     File,
     SQLite,
+    NativeService,
     databaseManager,
     bleManager,
     httpManager,
     ImagePicker,
-    // AppUpdate,
+    AppUpdate,
+    AppVersion,
+    FileTransfer, FileTransferObject,
+    FileOpener,
     // ThemeableBrowser,
     // ThemeableBrowserObject,
     {provide: ErrorHandler, useClass: IonicErrorHandler}

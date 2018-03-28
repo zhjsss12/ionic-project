@@ -11,19 +11,43 @@
 <div padding-top text-center>
   <ion-list inset>
     <ion-list-header>运动时间</ion-list-header>
-    <button ion-item (click)="setSportTime()">设置运动时间</button>
+    <ion-item>
+      <ion-label>设置运动时间</ion-label>
+      <ion-select [(ngModel)]="time">
+        <ion-option *ngFor="let t of times;" [value]="t" (click)="setSportTime()">{{ t }}</ion-option>
+      </ion-select>
+    </ion-item>
+    <!-- <button ion-item (click)="setSportTime()">设置运动时间</button> -->
   </ion-list>
   <ion-list inset>
     <ion-list-header>卡路里消耗</ion-list-header>
-    <button ion-item (click)="setCalories()">设置卡路里消耗</button>
+    <ion-item>
+      <ion-label>设置卡路里消耗</ion-label>
+      <ion-select [(ngModel)]="calo">
+        <ion-option *ngFor="let c of calos;" [value]="c" (click)="setCalories()">{{ c }}</ion-option>
+      </ion-select>
+    </ion-item>
+    <!-- <button ion-item (click)="setCalories()">设置卡路里消耗</button> -->
   </ion-list>
   <ion-list inset>
     <ion-list-header>步数</ion-list-header>
-    <button ion-item (click)="setStep()">设置步数目标</button>
+    <ion-item>
+      <ion-label>设置步数目标</ion-label>
+      <ion-select [(ngModel)]="step">
+        <ion-option *ngFor="let s of steps;" [value]="s" (click)="setStep()">{{ s }}</ion-option>
+      </ion-select>
+    </ion-item>
+    <!-- <button ion-item (click)="setStep()">设置步数目标</button> -->
   </ion-list>
   <ion-list inset>
     <ion-list-header>运动距离</ion-list-header>
-    <button ion-item (click)="setDistance()">设置运动距离</button>
+    <ion-item>
+      <ion-label>设置运动距离</ion-label>
+      <ion-select [(ngModel)]="dist">
+        <ion-option *ngFor="let d of dists;" [value]="d" (click)="setDistance()">{{ d }}</ion-option>
+      </ion-select>
+    </ion-item>
+    <!-- <button ion-item (click)="setDistance()">设置运动距离</button> -->
   </ion-list>
 </div>
 </ion-content>

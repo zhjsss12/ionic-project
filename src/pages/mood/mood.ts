@@ -22,6 +22,7 @@ export class MoodPage {
   sentence = '说点啥吧';
   notes: Note[] = [];
   isHistory: string = "new";
+  pic :string = "0";//这个用来暂时记录图片的字符串
   constructor(public navCtrl: NavController,
               public alertCtrl: AlertController,
               public user: UserData,
@@ -71,14 +72,15 @@ export class MoodPage {
       width: 500,//图片的宽度
       height: 500,//图片的高度
       quality: 50,//图片的质量0-100之间选择
-      outputType: 0 // default .FILE_URI返回影像档的，0表示FILE_URI返回影像档的也是默认的，1表示返回base64格式的图片
+      outputType: 1 // default .FILE_URI返回影像档的，0表示FILE_URI返回影像档的也是默认的，1表示返回base64格式的图片
     }
     var arry = []
     this.imagePicker.getPictures(options).then((results) => {
       for (var i = 0; i < results.length; i++) {
         // arry.push("data:image/jpeg;base64," + results[i]);//处理图片的格式，用于向服务器传输
-        console.log(results[i])
-        this.picPath = results[i];
+        this.pic = results[i];
+        console.log(results[i]);
+        this.picPath = "data:image/jpeg;base64,"+results[i];
       }
     }, (err) => {
       console.log("error"+err);
@@ -87,7 +89,7 @@ export class MoodPage {
 
   OnClick(){
     this.user.getUsername().then((userName)=>{
-      this.hm.sendMoodToServer(userName,this.sentence).then((score)=>{
+      this.hm.sendMoodToServer(userName,this.sentence,this.pic).then((score)=>{
         this.moodScore=score.substr(0,3);
         this.user.setMoodScore(+this.moodScore);
         this.events.publish('moodChanged');

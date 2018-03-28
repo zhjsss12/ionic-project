@@ -21,11 +21,14 @@ import { ConferenceData } from '../providers/conference-data';
 import { UserData } from '../providers/user-data';
 import { databaseManager } from '../providers/databaseManager';
 import { bleManager } from '../providers/bleManager';
+import { httpManager } from '../providers/httpManager';
 import { BLE } from '@ionic-native/ble';
 import { Injectable } from '@angular/core';
 import { GroupListPage } from '../pages/group-list/group-list';
 import { SuggestionPage } from '../pages/suggestion/suggestion';
-// import { AppUpdate } from '@ionic-native/app-update';
+import { AppUpdate } from '@ionic-native/app-update';
+import { AppVersion } from '@ionic-native/app-version';
+import { NativeService } from './../providers/NativeService';
 export interface PageInterface {
   title: string;
   name: string;
@@ -91,10 +94,13 @@ export class MyApp {
     public userdata: UserData,
     public toastCtrl: ToastController,
     private bm: bleManager,
-    // private appUpdate: AppUpdate
+    private appUpdate: AppUpdate,
+    private appVersion: AppVersion,
+    private ns: NativeService,
+    private hm: httpManager
   ) {
-    // const updateUrl = 'http://120.26.131.179:80/update';
-    // this.appUpdate.checkAppUpdate(updateUrl);
+    let updateUrl = 'http://120.26.131.179:80/update';
+    this.appUpdate.checkAppUpdate(updateUrl).then(() => { console.log('Update available') });
     this.storage.get('hasLoggedIn')
       .then((hasLoggedIn) => {
         if (hasLoggedIn) {
@@ -151,6 +157,20 @@ export class MyApp {
       // Here you can do any higher level native things you might need.
       this.statusBar.styleDefault();
       this.splashScreen.hide();
+      this.appVersion.getVersionNumber().then((version: string) => {
+        console.log('app-version: '+version)
+        this.hm.getNewVersion().then((newVersion) => {
+          console.log('new-version: '+newVersion)
+          if(newVersion != version){
+            this.ns.detectionUpgrade("http://120.26.131.179:80/app", true);
+          }
+        }).catch((err) => {
+          console.log(err)
+        });
+      }).catch(err => {
+        console.log('getVersionNumber:' + err);
+      });
+
     });
   }
 

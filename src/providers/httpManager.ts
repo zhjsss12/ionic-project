@@ -1,4 +1,4 @@
-import { HTTP } from '@ionic-native/http';
+﻿import { HTTP } from '@ionic-native/http';
 import { Injectable } from '@angular/core';
 import { UserData } from '../providers/user-data';
 /**
@@ -70,7 +70,7 @@ export class httpManager {
           password : data[3],
           userName : userName
         }};
-        console.log(body);
+        console.log(body);        
         this.http.post('http://120.26.131.179:80/createGroup', {body}, {}).then(data => {
           console.log('statu: '+data.status);
           console.log('send data: '+data.data);
@@ -91,7 +91,7 @@ export class httpManager {
   //发送用户加群信息给服务器
   sendEnterGroupToServer(groupName){
       this.userData.getUsername().then((userName) => {
-        var body : any = {
+        var body : any = { 
           userName : userName,
           groupName : groupName,
         };
@@ -111,7 +111,7 @@ export class httpManager {
   //发送用户加群信息给服务器
   sendExitGroupToServer(groupName){
       this.userData.getUsername().then((userName) => {
-        var body : any = {
+        var body : any = { 
           userName : userName,
           groupName : groupName,
         };
@@ -132,7 +132,7 @@ export class httpManager {
   getGroup():Promise<any>{
     return new Promise((resolve,reject)=>{
       this.userData.getUsername().then((userName) => {
-        var body : any = {
+        var body : any = { 
           userName : userName
         };
         this.http.post('http://120.26.131.179:80/getGroup', {body}, {})
@@ -211,6 +211,26 @@ export class httpManager {
     });
   }
 
+  sendMoodToServer(userName,sentence,pic): Promise<any>{
+    console.log('sendMoodToServer');
+    var data = {userName: userName,
+                sentence : sentence,
+                pic : pic};
+    return new Promise((resolve,reject)=>{
+      this.http.post('http://120.26.131.179:80/uploadSentence',{data},{}).then((data) => {
+        console.log(data.status);
+        console.log(data.data); // data received by server
+        resolve(data.data);
+        console.log(data.headers);
+
+      }).catch((error) => {
+        console.log(error.status);
+        reject(error.error);
+        console.log(error.error); // error message as string
+        console.log(error.headers);
+      });
+    });
+  }
 
   //发送意见给服务器
   sendSuggestionToServer(loc, text){
@@ -232,26 +252,23 @@ export class httpManager {
       });
     });
 
-
   }
-
-  sendMoodToServer(userName,sentence): Promise<any>{
-    console.log('sendMoodToServer');
-    var data = {userName: userName,
-                sentence : sentence};
+  getNewVersion(): Promise<any> {
     return new Promise((resolve,reject)=>{
-      this.http.post('http://120.26.131.179:80/uploadSentence',{data},{}).then((data) => {
+      this.http.get('http://120.26.131.179:80/update',{},{}).then((data) => {
         console.log(data.status);
         console.log(data.data); // data received by server
-        resolve(data.data);
         console.log(data.headers);
-
+        resolve(data.data);
       }).catch((error) => {
         console.log(error.status);
-        reject(error.error);
         console.log(error.error); // error message as string
         console.log(error.headers);
+        reject(error);
       });
     });
   }
+
 }
+
+

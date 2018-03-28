@@ -1,5 +1,6 @@
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
 import { dataClass} from '../entity/dataClass';
+import { UserData } from '../providers/user-data';
 import { Injectable } from '@angular/core';
 // 这是数据库控制类
 
@@ -9,23 +10,28 @@ export class databaseManager {
   ans:any;
   constructor(
     private sqlite: SQLite,
+    public userData: UserData,
   ) {}
 
 //数据库初始化类，如果没有创建过这个表格，就重新创建一次。
   databaseInit(){
-    this.sqlite.create({
-      name: 'data.db',
-      location: 'default'
-    }).then((db: SQLiteObject) => {
-      db.executeSql('create table if not exists sports(id INT PRIMARY KEY , AA INT, BB INT, CC INT, datee DATE, DD INT, EE INT, FF INT, GG INT, HH INT, II INT, JJ INT, KK INT, LL INT, MM INT);', {})
-        .then(() => console.log('Executed SQL'))
-        .catch(e => console.log(e));
-      this.myAppDatabase=db;
+    this.userData.getUsername().then((userName) => {
+      console.log('用户名');
+      console.log(userName+'.db');
+      this.sqlite.create({
+        name: userName+'.db',
+        location: 'default'
+      }).then((db: SQLiteObject) => {
+        db.executeSql('create table if not exists sports(id INT PRIMARY KEY , AA INT, BB INT, CC INT, datee DATE, DD INT, EE INT, FF INT, GG INT, HH INT, II INT, JJ INT, KK INT, LL INT, MM INT);', {})
+          .then(() => console.log('Executed SQL'))
+          .catch(e => console.log(e));
+        this.myAppDatabase=db;
+      }).catch(e => console.log(e));
     }).catch(e => console.log(e));
   }
 
 //将一个dataClass类插入数据库
-insert(dc:dataClass) : Promise<string>{
+  insert(dc:dataClass) : Promise<string>{
     return new Promise((resolve,reject)=>{
       var list:number[] = [];
       list.push(+dc.id);
@@ -75,7 +81,7 @@ insert(dc:dataClass) : Promise<string>{
 //     console.log(x['id'],x['AA'],x['BB']);
 // }
 //。
-query(): Promise<any>{
+  query(): Promise<any>{
   return new Promise((resolve,reject)=>{
     this.myAppDatabase.executeSql('select * from sports ',[])
       .then(
@@ -175,24 +181,32 @@ query(): Promise<any>{
 //查询睡眠信息
   querySleep(strYesterday: string, strToday : string): Promise <any>{
     return new Promise((resolve,reject)=>{
-      this.sqlite.create({
-        name: 'data.db',
-        location: 'default'
-      }).then((db: SQLiteObject) => {
-        var sql = "select id ,FF + GG + HH + II +JJ +KK+ LL +MM from sports where EE != 0 and (id < "+ strToday + "48 and id> " + strYesterday + "47);";
-        console.log("databaseManager.ts sql " + sql);
-        db.executeSql(sql,[])
-          .then(
-            (resultSet) => {
-              console.log('sql resultSet.length : '+resultSet.rows.length);
-              resolve(resultSet);
-            })
-          .catch(e =>{
-            console.log(e);
-            reject(e);
+      var sql = "select id ,FF,GG,HH,II,JJ,KK,LL,MM from sports where EE != 0 and (id < "+ strToday + "48 and id> " + strYesterday + "47);";
+      console.log("databaseManager.ts sql " + sql);
+      this.myAppDatabase.executeSql(sql,[])
+        .then(
+          (resultSet) => {
+          console.log('length ' + resultSet.rows.length);
+          for ( var i=0 ; i<resultSet.rows.length;i++) {
+              console.log(' for loop i = ', i);
+              var x= resultSet.rows.item(i);
+              var listAtr=[];
+              var listData=[];
+              for (var j in x) {
+                listAtr.push(j);
+                listData.push(x[j]);
+              }
+              console.log(listAtr);
+              console.log(listData);
           }
-        );
-      }).catch(e => console.log(e));
+            console.log('sql resultSet.length : '+resultSet.rows.length);
+            resolve(resultSet);
+          })
+        .catch(e =>{
+          console.log(e);
+          reject(e);
+        }
+      );
     });
   }
 }

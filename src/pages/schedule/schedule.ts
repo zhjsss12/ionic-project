@@ -92,6 +92,8 @@ export class SchedulePage {
       this.userdata.getSleepData().then((value)=>{
         if(!(value==null)){
           this.sleep = value;
+          let html = "<p>睡眠质量</p><p>"+ this.sleep +"</p>";
+          document.getElementById('sleep').innerHTML = html;
         }
       });
     });
@@ -99,6 +101,8 @@ export class SchedulePage {
       this.userdata.getMoodScore().then((value)=>{
         if(!(value==null)){
           this.mood = value;
+          let html = "<p>心情指数</p><p>"+ this.mood +"</p>";
+          document.getElementById('mood').innerHTML = html;
         }
       });
     });
@@ -458,7 +462,7 @@ export class SchedulePage {
                 for(let i=0; i<this.targets.length;i++){
                   html = html + "<div class=\"background\></div>";
                 }
-                html = html + "</div><div id=\"sleep\" *ngIf=\"sleep\"><p>睡眠质量</p><p>" + this.sleep + "</p></div><div id=\"mood\"  *ngIf=\"mood\"><p>心情指数</p><p>"+this.mood+"</p></div><div id=\"info\"><p>"+(this.pathLength/100).toFixed(2)+"km</p><p>"+this.buring+"卡路里</p></div>" ;
+                html = html + "</div><div id=\"sleep\"><p>睡眠质量</p><p>" + this.sleep + "</p></div><div id=\"mood\"><p>心情指数</p><p>"+this.mood+"</p></div><div id=\"info\"><p>"+(this.pathLength/100).toFixed(2)+"km</p><p>"+this.buring+"卡路里</p></div>" ;
                 document.getElementById('top').innerHTML = html;
                 this.finish = true;
                 this.userdata.getUsername().then(
@@ -487,7 +491,7 @@ export class SchedulePage {
                 for(let i=0; i<this.targets.length;i++){
                   html = html + "<div class=\"background\"></div>";
                 }
-                html = html + "</div><div id=\"sleep\" *ngIf=\"sleep\"><p>睡眠质量</p><p>" + this.sleep + "</p></div><div id=\"mood\" *ngIf=\"mood\"><p>心情指数</p><p>"+this.mood+"</p></div><div id=\"info\"><p>"+(this.pathLength/100).toFixed(2)+"km</p><p>"+this.buring+"卡路里</p></div>" ;
+                html = html + "</div><div id=\"sleep\"><p>睡眠质量</p><p>" + this.sleep + "</p></div><div id=\"mood\"><p>心情指数</p><p>"+this.mood+"</p></div><div id=\"info\"><p>"+(this.pathLength/100).toFixed(2)+"km</p><p>"+this.buring+"卡路里</p></div>" ;
                 document.getElementById('top').innerHTML = html;
                 this.finish = true;
                 this.userdata.getUsername().then(
@@ -800,13 +804,8 @@ export class SchedulePage {
     alert.present();
   }
   hxh(){
-    // var browser = this.iab.create('https://ionicframework.com/');
-    // browser.show();
-    let alert = this.alertCtrl.create({
-      title: '尚未开放敬请期待！',
-      buttons: ['好的']
-    });
-    alert.present();
+    var browser = this.iab.create('http://120.26.131.179:90/login.html');
+    browser.show();
   }
   cmh(){
     // var browser = this.iab.create('https://ionicframework.com/');

@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-
 import {
   ActionSheet,
   ActionSheetController,
@@ -159,18 +158,51 @@ export class SleepPage {
     });
   }
   render2(){
-    var yesterday = this.cal(-1);
-    var strToday = this.cal(0);
-    var tommorrow = this.cal(1);
+    var tmp= new Date();
+    var time = tmp.getTime();
+    if ( tmp.getHours()>12 ){
+      tmp= new Date(time + 24*60*60*1000);
+    }
+    var yesterday = new Date(tmp.getTime() - 24*60*60*1000);
+    var strToday = (tmp.getFullYear()%100).toString();
+    if(tmp.getMonth()<9){
+      strToday+= ('0'+ (tmp.getMonth() + 1 ).toString());
+    }
+    else {
+      strToday += (tmp.getMonth() + 1 ).toString();
+    }
+    if ( tmp.getDate() < 10){
+      strToday += ('0'+tmp.getDate().toString() );
+    }
+    else{
+      strToday += tmp.getDate().toString();
+    }
 
+    var strYesterday =  ( yesterday.getFullYear()%100).toString();
+
+    if(yesterday.getMonth()<9){
+      strYesterday+= ('0'+(yesterday.getMonth()+1).toString());
+    }
+    else {
+      strYesterday += (yesterday.getMonth()+1).toString() ;
+    }
+    if ( yesterday.getDate() < 10){
+      strYesterday += ('0'+yesterday.getDate().toString());
+    }
+    else{
+      strYesterday += yesterday.getDate().toString();
+    }
     var ids =[];
+    for (var i = 48; i < 96; i++) {
+      ids.push(strYesterday+ i.toString());
+    }
     for (var i = 0; i < 10; i++) {
       ids.push(strToday+ "0" + i.toString());
     }
-    for (var i = 10; i < 96; i++) {
+    for (var i = 10; i < 48; i++) {
       ids.push(strToday + i.toString());
     }
-    console.log( "sleep.ts  today = " + strToday + " yesterday = " + yesterday );
+    console.log( "sleep.ts  today = " + strToday + " yesterday = " + strYesterday );
     console.log( "sleep.ts  ids " + ids );
     var arr = new Array(96);
     for (var i = 0; i < 96; i++) {
@@ -178,13 +210,16 @@ export class SleepPage {
     }
     var tmp2 = [':00',":15",":30",':45'];
     var categorySpecific =[];
-
-    for (var i = 0; i <24 ; i++) {
+    for (var i = 12; i <24 ; i++) {
       for (var j = 0; j < 4; j++) {
         categorySpecific.push(i.toString() + tmp2[j]);
       }
     }
-
+    for (var i = 0; i <12 ; i++) {
+      for (var j = 0; j < 4; j++) {
+        categorySpecific.push(i.toString() + tmp2[j]);
+      }
+    }
     this.specific = Highcharts.chart('specific', {
       chart:{
         type:'column'
@@ -242,36 +277,31 @@ export class SleepPage {
         data: arr
       }]
     });
-    var aspect = ["FF",'GG','HH','II','JJ','KK','LL','MM']
-    this.dm.querySleep(yesterday,tommorrow).then(
+    this.dm.querySleep(strYesterday,strToday).then(
       (answer)=>{
         console.log('sleep.ts length ' + answer.rows.length);
         var len = answer.rows.length;
+        var j = 0;
         var sleep1 = 0 ,sleep2 = 0 ,sleep3 = 0 ,sleep4 = 1 ,sleepelse = 0 ;
-        for (var i = 0; i < 96; i++) {
-          // console.log(answer.rows.item(i)['id']);
-          // console.log(answer.rows.item(i)["FF + GG + HH + II +JJ +KK+ LL +MM"]);
-          for (var j = 0; j < len; j++) {
-            if( ids[i] == answer.rows.item(j)['id']){
-              for (var asp = 0; asp < 8; asp++) {
-                if(answer.rows.item(j)[aspect[asp]] != 0){
-                  var x = 256-(answer.rows.item(j)[aspect[asp]]);
-                  arr[i] += x;
-                  if (x <= 64 ) {
-                    sleep4 ++;
-                  }
-                  else if(x <= 128 && x > 64){
-                    sleep3 ++;
-                  }
-                  else if(x <= 192 && x > 128){
-                    sleep2 ++;
-                  }
-                  else if(x > 192){
-                    sleep1 ++;
-                  }
-                }
-              }
-            } 
+        for (var i = 0; i < len; i++) {
+          if( j < len && ids[i] == answer.rows.item(j)['id']){
+            arr[i] = answer.rows.item(j)["FF + GG + HH + II +JJ +KK+ LL +MM"];
+            j++;
+          }
+          if (arr[i] <= 32 && arr[i] > 0) {
+            sleep1 ++;
+          }
+          else if(arr[i] <= 64 && arr[i] > 32){
+            sleep2 ++;
+          }
+          else if(arr[i] <= 96 && arr[i] > 64){
+            sleep3 ++;
+          }
+          else if(arr[i] <= 128 && arr[i] > 96){
+            sleep4 ++;
+          }
+          else{
+            sleepelse ++;
           }
         }
         this.specific.series[0].update({
@@ -297,7 +327,21 @@ export class SleepPage {
           ]
         });
         this.chart.redraw();
+
         console.log('sleep.ts arr 四种睡眠' + arr);
+        // for ( var i=0 ; i<answer.rows.length;i++) {
+        //   var x= answer.rows.item(i);
+        //   var listAtr=[];
+        //   var listData=[];
+        //   for (var jj in x) {
+        //     listAtr.push(jj);
+        //     listData.push(x[jj]);
+        //   }
+        //   console.log(listAtr);
+        //   console.log(listData);
+        // }
+
+
       },
       (Error)=>{
         console.log("sleep.ts " + Error);
@@ -387,28 +431,30 @@ export class SleepPage {
     for (var i = -7; i <= 0 ; i++) {
       ids.push(this.cal(i));
     }
-    var aspect = ["FF",'GG','HH','II','JJ','KK','LL','MM']
+
     this.dm.querySleep(strYesterday,strToday).then(
       (answer)=>{
         console.log('sleep.ts chart3 length ' + answer.rows.length);
         var len = answer.rows.length;
+        var longStr = "FF + GG + HH + II +JJ +KK+ LL +MM";
         var cnt = [];
         for (var i = 0; i < 7 ; i++) {
           cnt.push(0);
         }
+
         for (var i = 0; i < len; i++) {
           var x = answer.rows.item(i)
+          // console.log(x,x[longStr]);
           for (var j = 0; j < 7; j++) {
-            if(+x['id'] < +(ids[j+1] + '48') &&  +x['id'] >=  +(ids[j] + '48')){
-              for (var asp = 0; asp < 8; asp++) {
-                if(x[aspect[asp]] != 0){
-                  sum[j] += 256-(x[aspect[asp]]);
-                }
-              }
+            // console.log(+x['id'] ,+(ids[j+1] + '48'), +(ids[j] + '48'));
+            if(+x['id'] < +(ids[j+1] + '48') &&  +x['id'] >=  +(ids[j] + '48') && x[longStr] > 0){
+              sum[j] += (1024-x[longStr]);
+              cnt[j] ++ ;
               break;
             }
           }
         }
+
         this.user.getUsername().then(
           userName =>{
             this.hm.sendSleepToServer(userName,Math.round(sum[6]/6000)/10);
