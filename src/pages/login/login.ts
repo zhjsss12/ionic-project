@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
 
-import { MenuController, NavController, Nav } from 'ionic-angular';
+import { AlertController,MenuController, NavController, Nav } from 'ionic-angular';
 
 import { UserData } from '../../providers/user-data';
 
@@ -19,12 +19,18 @@ export class LoginPage {
   login: UserOptions = { op: '1', name: '', password: '' };
   submitted = false;
 
-  constructor(public navCtrl: NavController, public userData: UserData, private http: HTTP,  public menu: MenuController, public nav:Nav) { }
+  constructor(public navCtrl: NavController, 
+  public userData: UserData, 
+  private http: HTTP,  
+  public menu: MenuController, 
+  public nav:Nav,
+  public alertCtrl: AlertController) { }
 
   onLogin(form: NgForm) {
     this.submitted = true;
-    let body = this.login;
+    let body = JSON.stringify(this.login);
     if (form.valid) {
+    
       this.http.post('http://120.26.131.179:80/login', {body}, {}).then(data => {
 
       // alert(data.status);

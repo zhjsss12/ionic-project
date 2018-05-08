@@ -4,6 +4,7 @@ import { AlertController, NavController, Events } from 'ionic-angular';
 import { ImagePicker } from '@ionic-native/image-picker';
 import { PopoverController } from 'ionic-angular';
 import { UserData } from '../../providers/user-data';
+import { httpManager } from '../../providers/httpManager';
 import { HTTP } from '@ionic-native/http';
 import { UserOptions } from '../../interfaces/user-options';
 @Component({
@@ -35,7 +36,8 @@ export class AccountPage {
     private http: HTTP,
     private imagePicker: ImagePicker,
     public events: Events,
-    public popoverCtrl: PopoverController
+    public popoverCtrl: PopoverController,
+    private hm: httpManager
   ) {
     for(let i=0;i<150;i++){
       this.ages.push(i);
@@ -208,6 +210,7 @@ export class AccountPage {
     this.userData.setAge(this.age);
     this.userData.setHeight(this.height);
     this.userData.setWeight(this.weight);
+    this.hm.sendInfoToServer(this.picPath, this.school, this.grade, this.gender, this.age, this.height, this.weight);
   }
 
 }

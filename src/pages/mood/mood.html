@@ -44,8 +44,8 @@
     <!-- <ion-refresher (ionRefresh)="doRefresh($event)">
       <ion-refresher-content></ion-refresher-content>
     </ion-refresher> -->
-    <ion-card *ngFor="let note of notes;">
-      <img [src]="note.pic" style="height:30%"/>
+    <ion-card *ngFor="let note of notes;" (press)="pressEvent($event, note.id)">
+      <img [src]="note.pic" style="height:140px; width:100%;"/>
       <ion-card-content>
         <ion-card-title>
           我的心情

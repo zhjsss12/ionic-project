@@ -137,16 +137,23 @@ export class MoodPage {
           number = value;
           for(let i=1;i<=number;i++){
             let note = new Note();
+            note.id = i;
             this.user.getMoodPic(i).then((value) => {
-              note.pic = value;
-              this.user.getMoodSentence(i).then((content) => {
-                note.sent = content;
-                this.notes.push(note);
-                if(this.notes.length == number){
-                  this.events.publish('refreshFinished');
-                }
-              })
-            });
+              console.log(value)
+              if(value!=null){
+                console.log('!!!!')
+                console.log(value)
+                note.pic = value;
+                this.user.getMoodSentence(i).then((content) => {
+                  note.sent = content;
+                  this.notes.push(note);
+                  if(this.notes.length == number){
+                    this.events.publish('refreshFinished');
+                  }
+                })
+              }
+              
+            }).catch();
 
           }
 
@@ -154,7 +161,43 @@ export class MoodPage {
       });
     }
   }
-
+  pressEvent(e, id){
+    let alert = this.alertCtrl.create();
+    alert.setTitle('请选择操作：');
+    alert.addInput({
+      type: 'radio',
+      label: '删除全部历史心情',
+      value: 'all',
+      checked: true
+    });
+    alert.addInput({
+      type: 'radio',
+      label: '删除本条心情',
+      value: 'single'
+    });
+    alert.addButton({
+      text: '取消',
+      handler: data => {
+      }
+    });
+    alert.addButton({
+      text: '好的',
+      handler: data => {
+        if(data=='all'){
+          this.user.removeAllMoodPic();
+          this.notes = []
+        }else{
+          this.user.removeMoodPic(id);
+          this.notes.splice(id-1,1)
+          for(let i=1;i<=this.notes.length;i++){
+            this.notes[i-1].id = i;
+          }
+          console.log(this.notes)
+        }
+      }
+    });
+    alert.present();
+  }
   doRefresh(refresher: Refresher) {
     console.log('Begin refresh operation', refresher);
     this.events.subscribe('refreshFinished', () => {

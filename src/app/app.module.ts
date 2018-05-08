@@ -10,11 +10,9 @@ import { IonicStorageModule } from '@ionic/storage';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { HttpModule } from '@angular/http';
 import { SQLite } from '@ionic-native/sqlite';
-import { AppUpdate } from '@ionic-native/app-update';
 import { AppVersion } from '@ionic-native/app-version';
 import { FileOpener } from '@ionic-native/file-opener';
 import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
-// import { ThemeableBrowser, ThemeableBrowserOptions, ThemeableBrowserObject } from '@ionic-native/themeable-browser';
 
 import { HelloIonicPage } from '../pages/hello-ionic/hello-ionic';
 import { AboutPage } from '../pages/about/about';
@@ -51,7 +49,7 @@ import { httpManager } from '../providers/httpManager';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { ImagePicker } from '@ionic-native/image-picker';
-// import { AppUpdate } from '@ionic-native/app-update';
+import {Keyboard} from '@ionic-native/keyboard';
 @NgModule({
   declarations: [
     MyApp,
@@ -158,13 +156,13 @@ import { ImagePicker } from '@ionic-native/image-picker';
     bleManager,
     httpManager,
     ImagePicker,
-    AppUpdate,
     AppVersion,
     FileTransfer, FileTransferObject,
     FileOpener,
     // ThemeableBrowser,
     // ThemeableBrowserObject,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    Keyboard,
   ]
 })
 export class AppModule {}

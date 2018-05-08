@@ -51,7 +51,11 @@ export class GroupListPage {
 
   ionViewDidLoad() {
     this.app.setTitle('Schedule');
-    
+    let toast = this.toastCtrl.create({
+      message: '左划可加入社区，右划可退出社区，点击右上角可创建社区',
+      duration: 5000
+    });
+    toast.present();
     // console.log('group-list');
     // this.hm.getSelfGroupFriends('二狗子');
   }
@@ -103,14 +107,14 @@ export class GroupListPage {
     if (this.user.hasFavorite(sessionData.groupName)) {
       // woops, they already favorited it! What shall we do!?
       // prompt them to remove it
-      this.removeFavorite(slidingItem, sessionData, 'Favorite already added');
+      this.removeFavorite(slidingItem, sessionData, '已加入这个社区');
     } else {
 
       // create an alert instance
       console.log(sessionData);
       let havePass = this.alertCtrl.create({
-        title: '请输入群组密码',
-        message: "非常抱歉，这是一个密码群组，请输入群组密码",
+        title: '请输入社区密码',
+        message: "非常抱歉，这是一个密码社区，请输入社区密码",
         inputs: [
           {
             name: 'title',
@@ -119,14 +123,14 @@ export class GroupListPage {
         ],
         buttons: [
           {
-            text: 'Cancel',
+            text: '取消',
             handler: data => {
               console.log('Cancel clicked');
               slidingItem.close();
             }
           },
           {
-            text: 'Save',
+            text: '确认',
             handler: data => {
               console.log("这是输入的密码");
               console.log(data);
@@ -143,7 +147,7 @@ export class GroupListPage {
         ]
       });
       let noPass = this.alertCtrl.create({
-        title: '成功加入群组',
+        title: '成功加入社区',
         buttons: [{
           text: 'OK',
           handler: () => {
@@ -156,8 +160,8 @@ export class GroupListPage {
       });
 
       let enterFail = this.alertCtrl.create({
-        title: '加入群组失败',
-        message: "非常抱歉，这是一个密码群组，您输入的群组密码错误",
+        title: '加入社区失败',
+        message: "非常抱歉，这是一个密码社区，您输入的社区密码错误",
         buttons: [{
           text: 'OK',
           handler: () => {
@@ -181,10 +185,10 @@ export class GroupListPage {
   removeFavorite(slidingItem: ItemSliding, sessionData: any, title: string) {
     let alert = this.alertCtrl.create({
       title: title,
-      message: 'Would you like to remove this session from your favorites?',
+      message: '你想从已加入的社区列表中删除这个社区么',
       buttons: [
         {
-          text: 'Cancel',
+          text: '取消',
           handler: () => {
             // they clicked the cancel button, do not remove the session
             // close the sliding item and hide the option buttons
@@ -192,7 +196,7 @@ export class GroupListPage {
           }
         },
         {
-          text: 'Remove',
+          text: '删除',
           handler: () => {
             // they want to remove this session from their favorites
             this.user.removeFavorite(sessionData.groupName);

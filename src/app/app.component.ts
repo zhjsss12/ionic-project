@@ -1,4 +1,4 @@
-import { Component, ViewChild, NgZone } from '@angular/core';
+﻿import { Component, ViewChild, NgZone } from '@angular/core';
 import { HelloIonicPage } from '../pages/hello-ionic/hello-ionic';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -26,7 +26,6 @@ import { BLE } from '@ionic-native/ble';
 import { Injectable } from '@angular/core';
 import { GroupListPage } from '../pages/group-list/group-list';
 import { SuggestionPage } from '../pages/suggestion/suggestion';
-import { AppUpdate } from '@ionic-native/app-update';
 import { AppVersion } from '@ionic-native/app-version';
 import { NativeService } from './../providers/NativeService';
 export interface PageInterface {
@@ -51,6 +50,8 @@ export class MyApp {
   // make HelloIonicPage the root (or first) page
   devices : any[] = [];
   rootPage: any;
+  loopCount: number = 0;
+  scanCount: any;
   pages: Array<{title: string, component: any}>;
   appPages: PageInterface[] = [
     { title: '个人信息', name: 'AccountPage', component: AccountPage, icon: 'person' },
@@ -94,13 +95,10 @@ export class MyApp {
     public userdata: UserData,
     public toastCtrl: ToastController,
     private bm: bleManager,
-    private appUpdate: AppUpdate,
     private appVersion: AppVersion,
     private ns: NativeService,
     private hm: httpManager
   ) {
-    let updateUrl = 'http://120.26.131.179:80/update';
-    this.appUpdate.checkAppUpdate(updateUrl).then(() => { console.log('Update available') });
     this.storage.get('hasLoggedIn')
       .then((hasLoggedIn) => {
         if (hasLoggedIn) {
@@ -157,19 +155,22 @@ export class MyApp {
       // Here you can do any higher level native things you might need.
       this.statusBar.styleDefault();
       this.splashScreen.hide();
-      this.appVersion.getVersionNumber().then((version: string) => {
-        console.log('app-version: '+version)
-        this.hm.getNewVersion().then((newVersion) => {
-          console.log('new-version: '+newVersion)
-          if(newVersion != version){
-            this.ns.detectionUpgrade("http://120.26.131.179:80/app", true);
-          }
-        }).catch((err) => {
-          console.log(err)
+      if(this.platform.is('android')){
+        this.appVersion.getVersionNumber().then((version: string) => {
+          console.log('app-version: '+version)
+          this.hm.getNewVersion().then((newVersion) => {
+            console.log('new-version: '+newVersion)
+            if(newVersion != version){
+              this.ns.detectionUpgrade("http://120.26.131.179:80/app", true);
+            }
+          }).catch((err) => {
+            console.log(err)
+          });
+        }).catch(err => {
+          console.log('getVersionNumber:' + err);
         });
-      }).catch(err => {
-        console.log('getVersionNumber:' + err);
-      });
+      }
+      
 
     });
   }
@@ -271,11 +272,11 @@ export class MyApp {
             this.userData.disconnectRing();
             alert("您已与手环解除绑定");
             this.events.publish('isRingUnConnected');
-            this.nav.setRoot(TabsPage);
+            // this.nav.setRoot(TabsPage);
           }else{
             this.connectToRing();
-            this.events.publish('isRingConnected');
-            this.nav.setRoot(TabsPage);
+            // this.events.publish('isRingConnected');
+            // this.nav.setRoot(TabsPage);
           }
         });
     }
@@ -311,34 +312,34 @@ export class MyApp {
     this.menu.enable(!loggedIn, 'loggedOutMenu');
   }
 
-  platformReady(id) {
-    console.log('plat pre now');
-    this.ble.isConnected(id).then(
-      (id) => {
-        this.platform.ready().then(() => {
-          this.splashScreen.hide();
-        });
-      }
-    ).catch(
-      (id) => this.loopConnect(id)
-    );
-    // Call any initial plugins when ready
-    // this.platform.ready().then(() => {
-    //   this.splashScreen.hide();
-    // });
-  }
-  loopConnect(id){
-    console.log("first loop now...");
-    this.ble.isConnected(id).then(
-      (id) => {
-        this.platform.ready().then(() => {
-          this.splashScreen.hide();
-        });
-      }
-    ).catch(
-      (id) => this.loopConnect(id)
-    );
-  }
+  // platformReady(id) {
+  //   console.log('plat pre now');
+  //   this.ble.isConnected(id).then(
+  //     (id) => {
+  //       this.platform.ready().then(() => {
+  //         this.splashScreen.hide();
+  //       });
+  //     }
+  //   ).catch(
+  //     (id) => this.loopConnect(id)
+  //   );
+  //   // Call any initial plugins when ready
+  //   // this.platform.ready().then(() => {
+  //   //   this.splashScreen.hide();
+  //   // });
+  // }
+  // loopConnect(id){
+  //   console.log("first loop now...");
+  //   this.ble.isConnected(id).then(
+  //     (id) => {
+  //       this.platform.ready().then(() => {
+  //         this.splashScreen.hide();
+  //       });
+  //     }
+  //   ).catch(
+  //     (id) => this.loopConnect(id)
+  //   );
+  // }
   isActive(page: PageInterface) {
     let childNav = this.nav.getActiveChildNavs()[0];
 
@@ -355,57 +356,93 @@ export class MyApp {
     }
     return;
   }
+
+  
+  
   connectToRing() {
     // the root left menu should be disabled on the tutorial page
     this.devices = [];
-    this.ble.isEnabled().then(
-    ).catch(
+    this.ble.isEnabled().then(()=>{
+      this.scanRing();
+    }).catch(
       () => {
               alert('Please open your bluetooth');
               this.ble.showBluetoothSettings().then().catch(
                 () => console.log('error')
               );
+              this.loopCount = 0;
+              this.loopJudgeBleOpenForScan();
             }
     );
-    this.scanRing();
+    
+  }
+  loopJudgeBleOpenForScan(){
+    console.log('looping...');
+    setTimeout(() => {
+      this.ble.isEnabled().then(()=>{
+        this.scanRing();
+      }).catch(() => {
+        this.loopCount++;
+        if(this.loopCount<10){
+          this.loopJudgeBleOpenForScan();
+        }else{
+          //alert("蓝牙连接操作超时，请打开蓝牙后再下拉刷新页面");
+          alert("蓝牙等待时间超时，请打开蓝牙后再尝试连接");
+        }
+      });
+    }, 1000);
+
   }
 
   scanRing() {
-    let i = 6;
-    while(this.devices.length == 0 && i>0){
-      i--;
-      let strs : string[] = ['fff0'];
-      this.ble.scan(strs, 5).subscribe(
-        device => this.onDeviceDiscovered(device),
-        error => this.scanError(error)
-      );
-      setTimeout(this.setStatus.bind(this), 5000, 'Scan complete');
-    }
+    
+    let strs : string[] = ['fff0'];
+    this.ble.scan(strs, 5).subscribe(
+      device => this.onDeviceDiscovered(device),
+      error => this.scanError(error)
+    );
     // this.devices = this.bm.firstScan(this.devices);
-    if(this.devices.length>0){
-      this.showRadio(this.devices);
-    }else{
-      let alert = this.alertCtrl.create({
-        title: '无法找到任何设备！',
-        message: '您可以选择尝试重新连接手环或者放弃此次绑定',
-        buttons: [
-          {
-            text: '重试',
-            handler: () => {
-              console.log('re-scan');
-              this.scanRing();
-            }
-          },
-          {
-            text: '放弃',
-            handler: () => {
-              console.log('refuse this connect');
+    setTimeout(() => {
+      if(this.devices.length>0){
+        console.log(this.devices)
+        for(let i=0;i<this.devices.length;i++){
+          for(let j=i+1;j<this.devices.length;j++){
+            if(this.devices[i].id == this.devices[j].id){
+              this.devices.splice(j,1);
+              j--;
             }
           }
-        ]
-      });
-      alert.present();
-    }
+        }
+        console.log("after")
+        console.log(this.devices)
+        this.showRadio(this.devices);
+      }else{
+        if(this.devices.length==0){
+          let alert = this.alertCtrl.create({
+            title: '无法找到任何设备！',
+            message: '您可以选择尝试重新连接手环或者放弃此次绑定',
+            buttons: [
+              {
+                text: '重试',
+                handler: () => {
+                  console.log('re-scan');
+                  this.scanRing();
+                }
+              },
+              {
+                text: '放弃',
+                handler: () => {
+                  console.log('refuse this connect');
+                }
+              }
+            ]
+          });
+          alert.present();
+        }
+        
+      }
+    },1000);
+    
   }
 
   showRadio(device: any[]) {
@@ -415,14 +452,14 @@ export class MyApp {
       if(i == 0) {
         alert.addInput({
           type: 'radio',
-          label: device[i].name+' '+device[i].id,
+          label: device[i].name+' '+device[i].id.split("-")[0],
           value: device[i].id,
           checked: true
         });
       } else {
         alert.addInput({
           type: 'radio',
-          label: device[i].name+' '+device[i].id,
+          label: device[i].name+' '+device[i].id.split("-")[0],
           value: device[i].id
         });
       }
@@ -438,7 +475,9 @@ export class MyApp {
     alert.addButton({
       text: 'OK',
       handler: data => {
-        this.userData.connectRing(data);
+        this.userdata.connectRing(data);
+        this.events.publish('isRingConnected');
+        this.deviceSelected(data);
       }
     });
 
@@ -469,93 +508,275 @@ export class MyApp {
     });
   }
 
-  listenToRingEvent(){
-
-    this.userdata.getDeviceNumber().then(
-      (value) => {
-        // this.platformReady(value);
-        let time = 5;
-        let strs : string[] = ['fff0'];
-        this.ble.scan(strs, time).subscribe(
-          device => {
-            if(device.id == value){
-              this.deviceSelected(device.id);
-
-            }else{
-              time = 5;
-            }
-          },
-          error => this.scanError(error)
-        );
-        setTimeout(this.setStatus.bind(this), 5000, 'Scan complete');
-
-      }
-    ).catch(
-      () => console.log('error')
-    );
-
-  }
-  deviceSelected(id){
-    console.log("Success get device");
+  deviceSelected(id) {
+    console.log('devices  Select ',id);
     this.ble.connect(id).subscribe(
       peripheral => this.onConnected(peripheral),
-      peripheral => console.log("disconnect")
+      peripheral => this.onDeviceDisconnected(peripheral,id)
     );
   }
-  onConnected(id){
-    console.log("Success connect");
-    this.ble.startNotification(id, 'fff0' , 'fff7').subscribe(
-      buffer => {
-        var data = new Uint8Array(buffer);
-        this.ngZone.run(() => {
-          console.log(data);
-          if(data[0]==0x07 && data[1]==0x00){
-            var step_high, step_pre, step_aft;
-            var temp = data[7];
-            step_pre = Math.floor(temp/16)*16*16*16+temp%16*16*16;
-            temp = data[8];
-            step_aft = temp;
-            temp = data[6];
-            step_high = Math.floor(temp/16)*16*16*16*16*16+temp%16*16*16*16*16;
-            let step = step_pre + step_aft + step_high;
-            console.log("Success:"+"step="+step)
-            var kll_high, kll_pre, kll_aft;
-            temp = data[13];
-            kll_pre = Math.floor(temp/16)*16*16*16+temp%16*16*16;
-            temp = data[14];
-            kll_aft = temp;
-            temp = data[12];
-            kll_high = Math.floor(temp/16)*16*16*16*16*16+temp%16*16*16*16*16;
-            let buring = ((kll_pre + kll_aft + kll_high)/100).toFixed(2);
-            console.log("Success:"+"buring="+buring)
+
+  onConnected(peripheral) {
+    let alert = this.alertCtrl.create({
+      title: '传输数据',
+      message: '现在是否同步数据？',
+      buttons: [
+        {
+          text: '是的',
+          handler: () => {
+            this.events.publish('Syn-now')
           }
-          if(data[0]==0x07 && data[1]==0x01){
-            var path_high, path_pre, path_aft;
-            var temp = data[7];
-            path_pre = Math.floor(temp/16)*16*16*16+temp%16*16*16;
-            temp = data[8];
-            path_aft = temp;
-            temp = data[6];
-            path_high = Math.floor(temp/16)*16*16*16*16*16+temp%16*16*16*16*16;
-            let pathLength = path_pre + path_aft + path_high;
-            console.log("Success:"+"length="+length)
-
+        },
+        {
+          text: '放弃',
+          handler: () => {
+            console.log('refuse this connect');
           }
-          var myDate = new Date();
-          // this.data.push(data);
-          var interval = myDate.getHours()*4+Math.floor((myDate.getMinutes()+1)/15)-1;
+        }
+      ]
+    });
+    alert.present();
 
-            if(data[0]==0x43 && data[1] == 0xF0){
-              if(data[5]<=interval){
-                console.log('Success: insert and send :'+data);
-
-              }
-
-          }
-        });
-      }
-    );
   }
+
+
+
+  onDeviceDisconnected(peripheral,id) {
+    // if(this.scanCount>=0){
+    //   this.scanCount--;
+    //   this.ble.connect(id).subscribe(
+    //     peripheral => this.onConnected(peripheral),
+    //     peripheral => this.onDeviceDisconnected(peripheral,id)
+    //   );
+    // }else{
+      let alert = this.alertCtrl.create({
+        title: '无法连接到手环！',
+        message: '您可以选择尝试重新连接手环或者放弃本次连接',
+        buttons: [
+          {
+            text: '重试',
+            handler: () => {
+              console.log('re-connect');
+              this.scanCount = 5;
+              this.ble.connect(id).subscribe(
+                peripheral => this.onConnected(peripheral),
+                peripheral => this.onDeviceDisconnected(peripheral,id)
+              );
+            }
+          },
+          {
+            text: '放弃',
+            handler: () => {
+              console.log('refuse this connect');
+            }
+          }
+        ]
+      });
+      alert.present();
+    // }
+  }
+  
+  // connectToRing() {
+  //   // the root left menu should be disabled on the tutorial page
+  //   this.devices = [];
+  //   this.ble.isEnabled().then(
+  //   ).catch(
+  //     () => {
+  //             alert('Please open your bluetooth');
+  //             this.ble.showBluetoothSettings().then().catch(
+  //               () => console.log('error')
+  //             );
+  //           }
+  //   );
+  //   this.scanRing();
+  // }
+
+  // scanRing() {
+  //   let i = 6;
+  //   while(this.devices.length == 0 && i>0){
+  //     i--;
+  //     let strs : string[] = ['fff0'];
+  //     this.ble.scan(strs, 5).subscribe(
+  //       device => this.onDeviceDiscovered(device),
+  //       error => this.scanError(error)
+  //     );
+  //     setTimeout(this.setStatus.bind(this), 5000, 'Scan complete');
+  //   }
+  //   // this.devices = this.bm.firstScan(this.devices);
+  //   if(this.devices.length>0){
+  //     this.showRadio(this.devices);
+  //   }else{
+  //     let alert = this.alertCtrl.create({
+  //       title: '无法找到任何设备！',
+  //       message: '您可以选择尝试重新连接手环或者放弃此次绑定',
+  //       buttons: [
+  //         {
+  //           text: '重试',
+  //           handler: () => {
+  //             console.log('re-scan');
+  //             this.scanRing();
+  //           }
+  //         },
+  //         {
+  //           text: '放弃',
+  //           handler: () => {
+  //             console.log('refuse this connect');
+  //           }
+  //         }
+  //       ]
+  //     });
+  //     alert.present();
+  //   }
+  // }
+
+  // showRadio(device: any[]) {
+  //   let alert = this.alertCtrl.create();
+  //   alert.setTitle('Choose your ring:');
+  //   for(let i = 0; i < device.length; i++) {
+  //     if(i == 0) {
+  //       alert.addInput({
+  //         type: 'radio',
+  //         label: device[i].name+' '+device[i].id,
+  //         value: device[i].id,
+  //         checked: true
+  //       });
+  //     } else {
+  //       alert.addInput({
+  //         type: 'radio',
+  //         label: device[i].name+' '+device[i].id,
+  //         value: device[i].id
+  //       });
+  //     }
+  //   }
+
+  //   //alert.addButton('Cancel');
+  //   alert.addButton({
+  //     text: 'Retry',
+  //     handler: data => {
+  //       this.scanRing();
+  //     }
+  //   });
+  //   alert.addButton({
+  //     text: 'OK',
+  //     handler: data => {
+  //       this.userData.connectRing(data);
+  //     }
+  //   });
+
+  //   alert.present();
+  // }
+
+  // onDeviceDiscovered(device) {
+  //   console.log('Discovered ' + JSON.stringify(device, null, 2));
+  //   this.ngZone.run(() => {
+  //     this.devices.push(device);
+  //   });
+  // }
+
+  // scanError(error) {
+  //   this.setStatus('Error ' + error);
+  //   let toast = this.toastCtrl.create({
+  //     message: 'Error scanning for Bluetooth low energy devices',
+  //     position: 'middle',
+  //     duration: 5000
+  //   });
+  //   toast.present();
+  // }
+
+  // setStatus(message) {
+  //   console.log(message);
+  //   this.ngZone.run(() => {
+  //     this.statusMessage = message;
+  //   });
+  // }
+
+  // listenToRingEvent(){
+
+  //   this.userdata.getDeviceNumber().then(
+  //     (value) => {
+  //       // this.platformReady(value);
+  //       let time = 5;
+  //       let strs : string[] = ['fff0'];
+  //       this.ble.scan(strs, time).subscribe(
+  //         device => {
+  //           if(device.id == value){
+  //             this.deviceSelected(device.id);
+
+  //           }else{
+  //             time = 5;
+  //           }
+  //         },
+  //         error => this.scanError(error)
+  //       );
+  //       setTimeout(this.setStatus.bind(this), 5000, 'Scan complete');
+
+  //     }
+  //   ).catch(
+  //     () => console.log('error')
+  //   );
+
+  // }
+  // deviceSelected(id){
+  //   console.log("Success get device");
+  //   this.ble.connect(id).subscribe(
+  //     peripheral => this.onConnected(peripheral),
+  //     peripheral => console.log("disconnect")
+  //   );
+  // }
+  // onConnected(id){
+  //   console.log("Success connect");
+  //   this.ble.startNotification(id, 'fff0' , 'fff7').subscribe(
+  //     buffer => {
+  //       var data = new Uint8Array(buffer);
+  //       this.ngZone.run(() => {
+  //         console.log(data);
+  //         if(data[0]==0x07 && data[1]==0x00){
+  //           var step_high, step_pre, step_aft;
+  //           var temp = data[7];
+  //           step_pre = Math.floor(temp/16)*16*16*16+temp%16*16*16;
+  //           temp = data[8];
+  //           step_aft = temp;
+  //           temp = data[6];
+  //           step_high = Math.floor(temp/16)*16*16*16*16*16+temp%16*16*16*16*16;
+  //           let step = step_pre + step_aft + step_high;
+  //           console.log("Success:"+"step="+step)
+  //           var kll_high, kll_pre, kll_aft;
+  //           temp = data[13];
+  //           kll_pre = Math.floor(temp/16)*16*16*16+temp%16*16*16;
+  //           temp = data[14];
+  //           kll_aft = temp;
+  //           temp = data[12];
+  //           kll_high = Math.floor(temp/16)*16*16*16*16*16+temp%16*16*16*16*16;
+  //           let buring = ((kll_pre + kll_aft + kll_high)/100).toFixed(2);
+  //           console.log("Success:"+"buring="+buring)
+  //         }
+  //         if(data[0]==0x07 && data[1]==0x01){
+  //           var path_high, path_pre, path_aft;
+  //           var temp = data[7];
+  //           path_pre = Math.floor(temp/16)*16*16*16+temp%16*16*16;
+  //           temp = data[8];
+  //           path_aft = temp;
+  //           temp = data[6];
+  //           path_high = Math.floor(temp/16)*16*16*16*16*16+temp%16*16*16*16*16;
+  //           let pathLength = path_pre + path_aft + path_high;
+  //           console.log("Success:"+"length="+length)
+
+  //         }
+  //         var myDate = new Date();
+  //         // this.data.push(data);
+  //         var interval = myDate.getHours()*4+Math.floor((myDate.getMinutes()+1)/15)-1;
+
+  //           if(data[0]==0x43 && data[1] == 0xF0){
+  //             if(data[5]<=interval){
+  //               console.log('Success: insert and send :'+data);
+
+  //             }
+
+  //         }
+  //       });
+  //     }
+  //   );
+  // }
 
   listenToNote(){
     this.events.subscribe('notification:call', () => {

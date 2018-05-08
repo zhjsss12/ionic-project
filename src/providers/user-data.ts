@@ -325,6 +325,43 @@ export class UserData {
     });
   }
 
+  removeMoodPic(num: number): void {
+    this.storage.remove('moodPic'+num);
+    this.storage.remove('moodContent'+num)
+    // this.getPicNumber().then((value)=>{
+    //   let i=num+1;
+    //   for(i;i<=value;i++){
+    //     this.getMoodPic(i).then((picUrl)=>{
+    //       this.setMoodPic(picUrl, i-1);
+    //       // this.storage.remove('moodPic'+i);
+    //     });
+    //     this.getMoodSentence(i).then((sent)=>{
+    //       this.setMoodSentence(sent, i-1);
+    //       // this.storage.remove('moodContent'+i)
+    //     });
+    //   }
+    //   if(i==value+1){
+    //     this.storage.remove('moodPic'+value);
+    //     this.storage.remove('moodContent'+value)
+    //     this.setPicNumber(value-1);
+    //   }
+    // });
+  }
+
+  removeAllMoodPic(): void {
+    
+    this.getPicNumber().then((value)=>{
+      let i=1;
+      for(i;i<=value;i++){
+        this.storage.remove('moodPic'+i);
+        this.storage.remove('moodContent'+i);
+      }
+      if(i==value+1){
+        this.setPicNumber(0);
+      }
+    });
+  }
+
   setMoodSentence(content: string, num: number): void {
     let name: string = 'moodContent' + num;
     this.storage.set(name, content);

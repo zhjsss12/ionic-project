@@ -6,7 +6,36 @@
 
 <ion-content padding>
   <div *ngIf="session">
-    <h1>{{session.groupName}}</h1>
+  <ion-card>
+    <img src="assets/img/group.jpg"/>
+    <ion-card-content>
+      <ion-card-title>
+      {{session.groupName}}
+      </ion-card-title>
+    <h2 class="text">群介绍：</h2>
+    <p>{{session.description}}</p>
+    <h2 class="text">现有群成员：</h2>
+    <ion-list >
+        <p *ngFor="let member of session.members; let i = index "> 
+          {{i}}:{{member}}
+        </p>
+  </ion-list>
+  </ion-card-content>
+
+    <ion-col>
+      <button ion-button icon-left clear small>
+        <ion-icon name="thumbs-up"></ion-icon>
+        <div>12 赞</div>
+      </button>
+    </ion-col>
+    <ion-col>
+      <button ion-button icon-left clear small>
+        <ion-icon name="person"></ion-icon>
+        <div>{{session.members.length}}</div>
+      </button>
+    </ion-col>
+
+
 <!--     <h4 *ngFor="let speaker of session?.speakers">
     {{speaker.name}}
     </h4>
@@ -14,8 +43,9 @@
       {{session.timeStart}} - {{session.timeEnd}}
     </p>
     <p>{{session.location}}</p> -->
-    <p>群介绍：</p>
-    <p>{{session.description}}</p>
+
 <!--     <button ion-button>申请加入</button> -->
+</ion-card>
   </div>
+
 </ion-content>

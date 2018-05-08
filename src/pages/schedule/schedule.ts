@@ -46,7 +46,7 @@ export class SchedulePage {
   target: number;
   sleep = '0.4';
   mood = '0.6';
-  pathLength = 0;
+  pathLength = '0';
   buring :string = '0';
   devices : any[] = [];
   statusMessage: string;
@@ -60,7 +60,7 @@ export class SchedulePage {
   keepUpdate: boolean = false;
   sendCount = 0;
   loopCount: number = 0;
-  isRingConnected: string = "!手环未连接";
+  isRingConnected: string = "!手环未绑定";
 
   constructor(
     public alertCtrl: AlertController,
@@ -83,10 +83,10 @@ export class SchedulePage {
     // private themeableBrowser: ThemeableBrowser
   ) {
     this.events.subscribe('isRingConnected', () => {
-      this.isRingConnected = "手环已连接";
+      this.isRingConnected = "手环已绑定";
     });
     this.events.subscribe('isRingUnConnected', () => {
-      this.isRingConnected = "!手环未连接";
+      this.isRingConnected = "!手环未绑定";
     });
     this.events.subscribe('sleepChanged', () => {
       this.userdata.getSleepData().then((value)=>{
@@ -106,12 +106,21 @@ export class SchedulePage {
         }
       });
     });
+    this.events.subscribe('Syn-now', () => {
+      this.userdata.getDeviceNumber().then((value)=>{
+        this.steps=[]
+        this.deviceSelected(value);
+      }).catch(()=>{
+        alert("同步失败")
+      });
+      
+    });
   }
   ionViewWillEnter(){
     this.db.databaseInit();
-    console.log('进入了 首 页面');
+    // console.log('进入了 首 页面');
     this.userdata.getSleepData().then((value) => {
-      console.log(value);
+      // console.log(value);
       if(!(value==null)){
         this.sleep = value;
       }
@@ -124,9 +133,9 @@ export class SchedulePage {
     this.storage.get('hasConnectRing')
       .then((hasConnectRing) => {
         if (hasConnectRing) {
-          this.isRingConnected = "手环已连接";
+          this.isRingConnected = "手环已绑定";
         }else{
-          this.isRingConnected = "!手环未连接";
+          this.isRingConnected = "!手环未绑定";
         }
       });
   }
@@ -142,7 +151,7 @@ export class SchedulePage {
     var lastdate : Date;
 
     this.userdata.getLastUpdateTime().then((value) => {
-      console.log(value);
+      // console.log(value);
       lastdate = new Date(value);
       var lastDateDay = Math.floor(lastdate.getTime()/(1000*60*60*24));
       var myDateDay = Math.floor(myDate.getTime()/(1000*60*60*24));
@@ -154,6 +163,7 @@ export class SchedulePage {
       var interval = Math.floor((myDate.getTime() - lastdate.getTime())/(1000*60));
       if(interval > 0){
         this.userdata.setUpdateTime(myDate);
+        // console.log("即将进入连接手环的模块。。。");
         this.dataUpdate();
       }
     })
@@ -163,69 +173,82 @@ export class SchedulePage {
   }
 
   dataUpdate(){
+    // console.log("成功进入连接手环的模块");
     this.storage.get('hasConnectRing')
       .then((hasConnectRing) => {
         if (hasConnectRing) {
-          this.ble.isEnabled().then(
-          ).catch(
+          this.ble.isEnabled().then( ()=>{
+            // console.log("说明蓝牙开着")
+            // this.loop();
+            let loader = this.loadingCtrl.create({
+              content: "Please wait..."
+            });
+            loader.present();
+
+            setTimeout(() => {
+              this.scanCount = 25;
+              // console.log("正在获取设备号")
+              this.userdata.getDeviceNumber().then(
+                (value) => {
+                  this.id = value;
+                  // alert(this.id);
+                  let time = 5;
+                  let strs : string[] = ['fff0'];
+                  // console.log("正在尝试连接手环")
+                  this.ble.scan(strs, time).subscribe(
+                    device => {
+                      if(device.id == this.id){
+                        // console.log("成功找到手环")
+                        this.deviceSelected(device.id);
+                      }else{
+                        time = 5;
+                      }
+                    },
+                    error => this.scanError(error)
+                  );
+                  setTimeout(this.setStatus.bind(this), 5000, 'Scan complete');
+                  setTimeout(() => {
+                    this.ble.isConnected(value).then((value) => {
+
+                    }).catch((value) => {
+                      this.events.publish('transfarOver');
+                      // console.log("5s了还没找到手环")
+                      setTimeout(()=>{
+                        let toast = this.toastCtrl.create({
+                          message: '连接手环失败',
+                          duration: 1000
+                        });
+                        toast.present();
+                      },500);
+                    });
+                    loader.dismiss();
+                    
+                  }, 5000);
+                  // this.loopConnect(value);
+                }
+              ).catch(
+                () => console.log('error')
+              );
+            }, 10);
+
+            this.events.subscribe('transfarOver', () => {
+              setTimeout(() => {
+                loader.dismiss();
+                // console.log('Finished');
+              },200);
+            });
+          }).catch(
             () => {
+                    // console.log("没开蓝牙要去开蓝牙")
                     alert('Please open your bluetooth');
                     this.ble.showBluetoothSettings().then().catch(
                       () => console.log('error')
                     );
+                    // console.log("接下来将递归调用判断蓝牙是否连接的模块");
                     this.loopJudgeBleOpen();
                   }
           );
-          // this.loop();
-          let loader = this.loadingCtrl.create({
-            content: "Please wait..."
-          });
-          loader.present();
-          setTimeout(() => {
-            this.scanCount = 25;
-            this.userdata.getDeviceNumber().then(
-              (value) => {
-                this.id = value;
-                // alert(this.id);
-                let time = 5;
-                let strs : string[] = ['fff0'];
-                this.ble.scan(strs, time).subscribe(
-                  device => {
-                    if(device.id == this.id){
-                      this.deviceSelected(device.id);
-                    }else{
-                      time = 5;
-                    }
-                  },
-                  error => this.scanError(error)
-                );
-                setTimeout(this.setStatus.bind(this), 5000, 'Scan complete');
-                setTimeout(() => {
-                  this.ble.isConnected(value).then((value) => {
 
-                  }).catch((value) => {
-                    this.events.publish('transfarOver');
-                  //   let toast = this.toastCtrl.create({
-                  //     message: '连接手环失败',
-                  //     duration: 500
-                  //   });
-                  //   toast.present();
-                  });
-                  loader.dismiss();
-                }, 5000);
-                // this.loopConnect(value);
-              }
-            ).catch(
-              () => console.log('error')
-            );
-          }, 10);
-
-          this.events.subscribe('transfarOver', () => {
-            setTimeout(() => {
-              loader.dismiss();
-              console.log('Finished');
-            },200);
-          });
 
         } else {
           this.connectToRing();
@@ -234,7 +257,7 @@ export class SchedulePage {
   }
 
   loopJudgeBleOpen(){
-    console.log('looping...');
+    // console.log('looping...');
     setTimeout(() => {
       this.ble.isEnabled().then(()=>{
         let loader = this.loadingCtrl.create({
@@ -265,13 +288,16 @@ export class SchedulePage {
 
                 }).catch((value) => {
                   this.events.publish('transfarOver');
-                //   let toast = this.toastCtrl.create({
-                //     message: '连接手环失败',
-                //     duration: 500
-                //   });
-                //   toast.present();
+                  setTimeout(()=>{
+                    let toast = this.toastCtrl.create({
+                      message: '连接手环失败',
+                      duration: 1000
+                    });
+                    toast.present();
+                  },500);
                 });
                 loader.dismiss();
+                
               }, 5000);
               // this.loopConnect(value);
             }
@@ -283,7 +309,7 @@ export class SchedulePage {
         this.events.subscribe('transfarOver', () => {
           setTimeout(() => {
             loader.dismiss();
-            console.log('Finished');
+            // console.log('Finished');
           },200);
         });
       }).catch(() => {
@@ -302,54 +328,88 @@ export class SchedulePage {
   connectToRing() {
     // the root left menu should be disabled on the tutorial page
     this.devices = [];
-    this.ble.isEnabled().then(
-    ).catch(
+    this.ble.isEnabled().then(()=>{
+      this.scanRing();
+    }).catch(
       () => {
               alert('Please open your bluetooth');
               this.ble.showBluetoothSettings().then().catch(
                 () => console.log('error')
               );
+              this.loopCount = 0;
+              this.loopJudgeBleOpenForScan();
             }
     );
-    this.scanRing();
+    
+  }
+  loopJudgeBleOpenForScan(){
+    // console.log('looping...');
+    setTimeout(() => {
+      this.ble.isEnabled().then(()=>{
+        this.scanRing();
+      }).catch(() => {
+        this.loopCount++;
+        if(this.loopCount<10){
+          this.loopJudgeBleOpenForScan();
+        }else{
+          //alert("蓝牙连接操作超时，请打开蓝牙后再下拉刷新页面");
+          alert("蓝牙等待时间超时，请打开蓝牙后再尝试连接");
+        }
+      });
+    }, 1000);
+
   }
 
   scanRing() {
-    let i = 6;
-    while(this.devices.length == 0 && i>0){
-      i--;
-      let strs : string[] = ['fff0'];
-      this.ble.scan(strs, 5).subscribe(
-        device => this.onDeviceDiscovered(device),
-        error => this.scanError(error)
-      );
-      setTimeout(this.setStatus.bind(this), 5000, 'Scan complete');
-    }
+    
+    let strs : string[] = ['fff0'];
+    this.ble.scan(strs, 5).subscribe(
+      device => this.onDeviceDiscovered(device),
+      error => this.scanError(error)
+    );
     // this.devices = this.bm.firstScan(this.devices);
-    if(this.devices.length>0){
-      this.showRadio(this.devices);
-    }else{
-      let alert = this.alertCtrl.create({
-        title: '无法找到任何设备！',
-        message: '您可以选择尝试重新连接手环或者放弃此次绑定',
-        buttons: [
-          {
-            text: '重试',
-            handler: () => {
-              console.log('re-scan');
-              this.scanRing();
-            }
-          },
-          {
-            text: '放弃',
-            handler: () => {
-              console.log('refuse this connect');
+    setTimeout(() => {
+      if(this.devices.length>0){
+        // console.log(this.devices)
+        for(let i=0;i<this.devices.length;i++){
+          for(let j=i+1;j<this.devices.length;j++){
+            if(this.devices[i].id == this.devices[j].id){
+              this.devices.splice(j,1);
+              j--;
             }
           }
-        ]
-      });
-      alert.present();
-    }
+        }
+        // console.log("after")
+        // console.log(this.devices)
+
+        this.showRadio(this.devices);
+      }else{
+        if(this.devices.length==0){
+          let alert = this.alertCtrl.create({
+            title: '无法找到任何设备！',
+            message: '您可以选择尝试重新连接手环或者放弃此次绑定',
+            buttons: [
+              {
+                text: '重试',
+                handler: () => {
+                  // console.log('re-scan');
+                  this.scanRing();
+                }
+              },
+              {
+                text: '放弃',
+                handler: () => {
+                  // console.log('refuse this connect');
+                }
+              }
+            ]
+          });
+          alert.present();
+        }
+        
+      }
+    },1000);
+    
   }
 
   showRadio(device: any[]) {
@@ -359,14 +419,14 @@ export class SchedulePage {
       if(i == 0) {
         alert.addInput({
           type: 'radio',
-          label: device[i].name+' '+device[i].id,
+          label: device[i].name+' '+device[i].id.split("-")[0],
           value: device[i].id,
           checked: true
         });
       } else {
         alert.addInput({
           type: 'radio',
-          label: device[i].name+' '+device[i].id,
+          label: device[i].name+' '+device[i].id.split("-")[0],
           value: device[i].id
         });
       }
@@ -392,8 +452,9 @@ export class SchedulePage {
   }
 
   onDeviceDiscovered(device) {
-    console.log('Discovered ' + JSON.stringify(device, null, 2));
+    // console.log('Discovered ' + JSON.stringify(device, null, 2));
     this.ngZone.run(() => {
+      // console.log(device);
       this.devices.push(device);
     });
   }
@@ -409,13 +470,14 @@ export class SchedulePage {
   }
 
   setStatus(message) {
-    console.log(message);
+    // console.log(message);
     this.ngZone.run(() => {
       this.statusMessage = message;
     });
   }
 
   deviceSelected(id) {
+    // console.log('devices  Select ',id);
     this.ble.connect(id).subscribe(
       peripheral => this.onConnected(peripheral),
       peripheral => this.onDeviceDisconnected(peripheral,id)
@@ -423,7 +485,7 @@ export class SchedulePage {
   }
 
   onConnected(peripheral) {
-    console.log('Connect success');
+    // console.log('Connect success');
       this.peripheral = peripheral;
       let judge : boolean = false;
       this.ble.startNotification(peripheral.id, 'fff0' , 'fff7').subscribe(
@@ -462,7 +524,7 @@ export class SchedulePage {
                 for(let i=0; i<this.targets.length;i++){
                   html = html + "<div class=\"background\></div>";
                 }
-                html = html + "</div><div id=\"sleep\"><p>睡眠质量</p><p>" + this.sleep + "</p></div><div id=\"mood\"><p>心情指数</p><p>"+this.mood+"</p></div><div id=\"info\"><p>"+(this.pathLength/100).toFixed(2)+"km</p><p>"+this.buring+"卡路里</p></div>" ;
+                html = html + "</div><div id=\"sleep\"><p>睡眠质量</p><p>" + this.sleep + "</p></div><div id=\"mood\"><p>心情指数</p><p>"+this.mood+"</p></div><div id=\"info\"><p>"+this.pathLength+"km</p><p>"+this.buring+"卡路里</p></div>" ;
                 document.getElementById('top').innerHTML = html;
                 this.finish = true;
                 this.userdata.getUsername().then(
@@ -480,7 +542,7 @@ export class SchedulePage {
               path_aft = temp;
               temp = data[6];
               path_high = Math.floor(temp/16)*16*16*16*16*16+temp%16*16*16*16*16;
-              this.pathLength = path_pre + path_aft + path_high;
+              this.pathLength = ((path_pre + path_aft + path_high)/100).toFixed(2);
 
               if(this.finish2){
                 let html:string ="<div id=\"step\">";
@@ -491,7 +553,7 @@ export class SchedulePage {
                 for(let i=0; i<this.targets.length;i++){
                   html = html + "<div class=\"background\"></div>";
                 }
-                html = html + "</div><div id=\"sleep\"><p>睡眠质量</p><p>" + this.sleep + "</p></div><div id=\"mood\"><p>心情指数</p><p>"+this.mood+"</p></div><div id=\"info\"><p>"+(this.pathLength/100).toFixed(2)+"km</p><p>"+this.buring+"卡路里</p></div>" ;
+                html = html + "</div><div id=\"sleep\"><p>睡眠质量</p><p>" + this.sleep + "</p></div><div id=\"mood\"><p>心情指数</p><p>"+this.mood+"</p></div><div id=\"info\"><p>"+this.pathLength+"km</p><p>"+this.buring+"卡路里</p></div>" ;
                 document.getElementById('top').innerHTML = html;
                 this.finish = true;
                 this.userdata.getUsername().then(
@@ -512,7 +574,7 @@ export class SchedulePage {
             // console.log(dateYear+'-'+dateMonth+'-'+dateDay);
             if(data[0]==0x43 && data[1] == 0xF0){
               if(data[10]>20){
-                console.log(data);
+                // console.log(data);
               }
               this.sendCount += 1;
               if(data[2] == dateYear && data[3] == dateMonth && data[4] == dateDay){
@@ -539,12 +601,12 @@ export class SchedulePage {
                   }
                   dc.setId(d[3]+d[2]*100+d[1]*10000+d[0]*1000000);
                   dc.setData(d);
-                  console.log(dc);
+                  // console.log(dc);
                   this.db.insert(dc).then(
                     (result)=>{
-                      console.log(result);
+                      // console.log(result);
                     },(err)=>{
-                      console.log(err);
+                      // console.log(err);
                   });
                 }
               }else{
@@ -572,9 +634,9 @@ export class SchedulePage {
                 dc.setData(d);
                 this.db.insert(dc).then(
                   (result)=>{
-                    console.log(result);
+                    // console.log(result);
                   },(err)=>{
-                    console.log(err);
+                    // console.log(err);
                 });
               }
               if(this.sendCount == 96){
@@ -593,14 +655,14 @@ export class SchedulePage {
       );
 
       this.bm.requestCurSport(this.peripheral.id).then((success)=>{
-        console.log('request current ble data success');
+        // console.log('request current ble data success');
       },(error)=>{
-        console.log('request current ble data fail '+"-- "+error);
+        // console.log('request current ble data fail '+"-- "+error);
       });
       this.bm.writeCurTime(this.peripheral.id).then((success)=>{
-        console.log('write ble time success');
+        // console.log('write ble time success');
       },(error)=>{
-        console.log('write ble time fail '+"-- "+error);
+        // console.log('write ble time fail '+"-- "+error);
       });
       this.userdata.getNoti().then((value) => {
         if(!value){
@@ -608,10 +670,10 @@ export class SchedulePage {
             this.userdata.getNotiWeChat().then((wechat) => {
               this.userdata.getNotiQQ().then((qq) => {
                 this.bm.requestSetNoti(this.peripheral.id, call, wechat, qq).then((success)=>{
-                  console.log('set noti success');
+                  // console.log('set noti success');
                   this.userdata.setNoti(true);
                 },(error)=>{
-                  console.log('set noti fail '+"-- "+error);
+                  // console.log('set noti fail '+"-- "+error);
                   this.userdata.setNoti(false);
                 });
               });
@@ -624,24 +686,24 @@ export class SchedulePage {
       this.db.queryDataFull(0).then((value) => {
         if(value == 0){
           process = 1;
-          console.log('request today');
+          // console.log('request today');
           this.bm.requestSport(this.peripheral.id, Math.abs(0)).then((success)=>{
-            console.log('request ble data success'+'  '+0);
+            // console.log('request ble data success'+'  '+0);
           },(error)=>{
-            console.log('request ble data fail '+"-- "+error);
+            // console.log('request ble data fail '+"-- "+error);
           });
         }else{
           this.events.publish('finish'+((new Date(new Date().getTime() - 86400000*0)).getMonth()+1)+'-'+(new Date(new Date().getTime() - 86400000*0)).getDate());
         }
       });
-      console.log('listen to :'+'finish'+((new Date(new Date().getTime() - 86400000*0)).getMonth()+1)+'-'+(new Date(new Date().getTime() - 86400000*0)).getDate());
+      // console.log('listen to :'+'finish'+((new Date(new Date().getTime() - 86400000*0)).getMonth()+1)+'-'+(new Date(new Date().getTime() - 86400000*0)).getDate());
       this.events.subscribe(('finish'+((new Date(new Date().getTime() - 86400000*0)).getMonth()+1)+'-'+(new Date(new Date().getTime() - 86400000*0)).getDate()), () => {
         this.db.queryDataFull(-1).then((value) => {
           if(value == 0){
             this.bm.requestSport(this.peripheral.id, Math.abs(1)).then((success)=>{
-              console.log('request ble data success'+'  '+1);
+              // console.log('request ble data success'+'  '+1);
             },(error)=>{
-              console.log('request ble data fail '+"-- "+error);
+              // console.log('request ble data fail '+"-- "+error);
             });
           }else{
             this.events.publish('finish'+((new Date(new Date().getTime() - 86400000*1)).getMonth()+1)+'-'+(new Date(new Date().getTime() - 86400000*1)).getDate());
@@ -655,9 +717,9 @@ export class SchedulePage {
         this.db.queryDataFull(-2).then((value) => {
           if(value == 0){
             this.bm.requestSport(this.peripheral.id, Math.abs(2)).then((success)=>{
-              console.log('request ble data success'+'  '+2);
+              // console.log('request ble data success'+'  '+2);
             },(error)=>{
-              console.log('request ble data fail '+"-- "+error);
+              // console.log('request ble data fail '+"-- "+error);
             });
           }else{
             this.events.publish('finish'+((new Date(new Date().getTime() - 86400000*2)).getMonth()+1)+'-'+(new Date(new Date().getTime() - 86400000*2)).getDate());
@@ -671,9 +733,9 @@ export class SchedulePage {
         this.db.queryDataFull(-3).then((value) => {
           if(value == 0){
             this.bm.requestSport(this.peripheral.id, Math.abs(3)).then((success)=>{
-              console.log('request ble data success'+'  '+3);
+              // console.log('request ble data success'+'  '+3);
             },(error)=>{
-              console.log('request ble data fail '+"-- "+error);
+              // console.log('request ble data fail '+"-- "+error);
             });
           }else{
             this.events.publish('finish'+((new Date(new Date().getTime() - 86400000*3)).getMonth()+1)+'-'+(new Date(new Date().getTime() - 86400000*3)).getDate());
@@ -687,9 +749,9 @@ export class SchedulePage {
         this.db.queryDataFull(-4).then((value) => {
           if(value == 0){
             this.bm.requestSport(this.peripheral.id, Math.abs(4)).then((success)=>{
-              console.log('request ble data success'+'  '+4);
+              // console.log('request ble data success'+'  '+4);
             },(error)=>{
-              console.log('request ble data fail '+"-- "+error);
+              // console.log('request ble data fail '+"-- "+error);
             });
           }else{
             this.events.publish('finish'+((new Date(new Date().getTime() - 86400000*4)).getMonth()+1)+'-'+(new Date(new Date().getTime() - 86400000*4)).getDate());
@@ -703,9 +765,9 @@ export class SchedulePage {
         this.db.queryDataFull(-5).then((value) => {
           if(value == 0){
             this.bm.requestSport(this.peripheral.id, Math.abs(5)).then((success)=>{
-              console.log('request ble data success'+'  '+5);
+              // console.log('request ble data success'+'  '+5);
             },(error)=>{
-              console.log('request ble data fail '+"-- "+error);
+              // console.log('request ble data fail '+"-- "+error);
             });
           }else{
             this.events.publish('finish'+((new Date(new Date().getTime() - 86400000*5)).getMonth()+1)+'-'+(new Date(new Date().getTime() - 86400000*5)).getDate());
@@ -719,9 +781,9 @@ export class SchedulePage {
         this.db.queryDataFull(-6).then((value) => {
           if(value == 0){
             this.bm.requestSport(this.peripheral.id, Math.abs(6)).then((success)=>{
-              console.log('request ble data success'+'  '+6);
+              // console.log('request ble data success'+'  '+6);
             },(error)=>{
-              console.log('request ble data fail '+"-- "+error);
+              // console.log('request ble data fail '+"-- "+error);
             });
           }else{
             this.events.publish('transfarOver');
@@ -750,38 +812,38 @@ export class SchedulePage {
 
 
   onDeviceDisconnected(peripheral,id) {
-    if(this.scanCount>=0){
-      this.scanCount--;
-      this.ble.connect(id).subscribe(
-        peripheral => this.onConnected(peripheral),
-        peripheral => this.onDeviceDisconnected(peripheral,id)
-      );
-    }else{
-      let alert = this.alertCtrl.create({
-        title: '无法找到手环！',
-        message: '您可以选择尝试重新连接手环或者放弃本次连接',
-        buttons: [
-          {
-            text: '重试',
-            handler: () => {
-              console.log('re-connect');
-              this.scanCount = 5;
-              this.ble.connect(id).subscribe(
-                peripheral => this.onConnected(peripheral),
-                peripheral => this.onDeviceDisconnected(peripheral,id)
-              );
-            }
-          },
-          {
-            text: '放弃',
-            handler: () => {
-              console.log('refuse this connect');
-            }
-          }
-        ]
-      });
-      alert.present();
-    }
+    // if(this.scanCount>=0){
+    //   this.scanCount--;
+    //   this.ble.connect(id).subscribe(
+    //     peripheral => this.onConnected(peripheral),
+    //     peripheral => this.onDeviceDisconnected(peripheral,id)
+    //   );
+    // }else{
+      // let alert = this.alertCtrl.create({
+      //   title: '无法找到手环！',
+      //   message: '您可以选择尝试重新连接手环或者放弃本次连接',
+      //   buttons: [
+      //     {
+      //       text: '重试',
+      //       handler: () => {
+      //         console.log('re-connect');
+      //         this.scanCount = 5;
+      //         this.ble.connect(id).subscribe(
+      //           peripheral => this.onConnected(peripheral),
+      //           peripheral => this.onDeviceDisconnected(peripheral,id)
+      //         );
+      //       }
+      //     },
+      //     {
+      //       text: '放弃',
+      //       handler: () => {
+      //         console.log('refuse this connect');
+      //       }
+      //     }
+      //   ]
+      // });
+      // alert.present();
+    // }
   }
 
   wowowo(){
@@ -840,10 +902,10 @@ export class SchedulePage {
   }
 
   ringStatusChange(){
-    if(this.isRingConnected== "!手环未连接"){
+    if(this.isRingConnected== "!手环未绑定"){
     let alert = this.alertCtrl.create({
-      title: '您尚未连接手环！',
-      subTitle: '请点击左侧侧边栏里的 绑定手环/解除绑定 按钮连接手环',
+      title: '您尚未绑定手环！',
+      subTitle: '请点击左侧侧边栏里的 绑定手环/解除绑定 按钮绑定手环',
       buttons: ['好的']
     });
     alert.present();}else{

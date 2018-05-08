@@ -27,9 +27,9 @@ export class httpManager {
   exchangeBleData(data):Promise<any>{
     var user = "";
     return new Promise((resolve,reject)=>{
-      this.userData.getUsername().then((username) => {
+      this.userData.getUsername().then((username)=>{
        user = username;
-       var body : any = { body:{
+       var body = JSON.stringify( { body:{
          name:user,
          AA: data[2],
          BB: data[3],
@@ -45,7 +45,7 @@ export class httpManager {
          LL: data[13],
          MM: data[14]
        }
-       }
+       });
        resolve(body);
      }).catch((error)=>{
        reject(error);
@@ -63,13 +63,13 @@ export class httpManager {
 
     return new Promise((resolve,reject)=>{
       this.userData.getUsername().then((userName) => {
-        var body : any = { body:{
+        var body = JSON.stringify({ body:{
           groupName : data[0],
           description : data[1],
           hasPass : data[2],
           password : data[3],
           userName : userName
-        }};
+        }});
         console.log(body);        
         this.http.post('http://120.26.131.179:80/createGroup', {body}, {}).then(data => {
           console.log('statu: '+data.status);
@@ -91,10 +91,10 @@ export class httpManager {
   //发送用户加群信息给服务器
   sendEnterGroupToServer(groupName){
       this.userData.getUsername().then((userName) => {
-        var body : any = { 
+        var body = JSON.stringify({ 
           userName : userName,
           groupName : groupName,
-        };
+        });
         console.log('sendEnterGroupToServer');
         console.log(body);
         this.http.post('http://120.26.131.179:80/enterGroup', {body}, {}).then(data => {
@@ -111,10 +111,10 @@ export class httpManager {
   //发送用户加群信息给服务器
   sendExitGroupToServer(groupName){
       this.userData.getUsername().then((userName) => {
-        var body : any = { 
+        var body = JSON.stringify({ 
           userName : userName,
           groupName : groupName,
-        };
+        });
         console.log('sendEnterGroupToServer');
         console.log(body);
         this.http.post('http://120.26.131.179:80/exitGroup', {body}, {}).then(data => {
@@ -132,9 +132,9 @@ export class httpManager {
   getGroup():Promise<any>{
     return new Promise((resolve,reject)=>{
       this.userData.getUsername().then((userName) => {
-        var body : any = { 
+        var body  =JSON.stringify ({ 
           userName : userName
-        };
+        });
         this.http.post('http://120.26.131.179:80/getGroup', {body}, {})
           .then(data => {
             console.log(data.status);
@@ -157,7 +157,7 @@ export class httpManager {
 
   getSelfGroupFriends(name): Promise<any> {
     console.log('getSelfGroupFriends');
-    var data = {name: name};
+    var data = JSON.stringify({name: name});
     return new Promise((resolve,reject)=>{
       this.http.post('http://120.26.131.179:80/getSelfGroupFriends',{data},{}).then((data) => {
         console.log(data.status);
@@ -180,8 +180,8 @@ export class httpManager {
 
   sendRunToServer(userName,run){
     console.log('sendRunToServer');
-    var data = {userName: userName,
-                run : run,};
+    var data = JSON.stringify({userName: userName,
+                run : run,});
 
     this.http.post('http://120.26.131.179:80/updateRank',{data},{}).then((data) => {
       console.log(data.status);
@@ -196,8 +196,8 @@ export class httpManager {
   }
   sendSleepToServer(userName,sleep){
     console.log('sendSleepToServer');
-    var data = {userName: userName,
-                sleep : sleep};
+    var data =  JSON.stringify( {userName: userName,
+                sleep : sleep});
 
     this.http.post('http://120.26.131.179:80/updateRank',{data},{}).then((data) => {
       console.log(data.status);
@@ -213,9 +213,9 @@ export class httpManager {
 
   sendMoodToServer(userName,sentence,pic): Promise<any>{
     console.log('sendMoodToServer');
-    var data = {userName: userName,
+    var data = JSON.stringify({userName: userName,
                 sentence : sentence,
-                pic : pic};
+                pic : pic});
     return new Promise((resolve,reject)=>{
       this.http.post('http://120.26.131.179:80/uploadSentence',{data},{}).then((data) => {
         console.log(data.status);
@@ -235,11 +235,11 @@ export class httpManager {
   //发送意见给服务器
   sendSuggestionToServer(loc, text){
     this.userData.getUsername().then((name)=>{
-      var body : any = {
+      var body  = JSON.stringify({
         name : name,
         location : loc,
         suggestion : text,
-      };
+      });
       console.log('sendSuggestionToServer');
       console.log(body);
       this.http.post('http://120.26.131.179:80/uploadAdvice', {body}, {}).then(data => {
@@ -268,7 +268,31 @@ export class httpManager {
       });
     });
   }
+  //发送个人信息给服务器
+  sendInfoToServer(pic, school, grade, sex, age, height, weight){
+    this.userData.getUsername().then((name)=>{
+      var body  = JSON.stringify({
+        name : name,
+        picture : pic,
+        grade : grade,
+        sex: sex,
+        age: age,
+        height: height,
+        weight: weight
+      });
+      console.log('sendInfoToServer');
+      console.log(body);
+      this.http.post('http://120.26.131.179:80/uploadInfo', {body}, {}).then(data => {
+        console.log('statu: '+data.status);
+        console.log('send data: '+data.data);
 
+      }).catch(error => {
+        console.log('error statu: '+error.status);
+        console.log('error: '+error.error);
+      });
+    });
+
+  }
 }
 
 

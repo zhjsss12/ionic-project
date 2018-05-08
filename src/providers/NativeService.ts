@@ -1,5 +1,4 @@
-import { AppUpdate } from '@ionic-native/app-update';
-import { AppVersion } from '@ionic-native/app-version';
+﻿import { AppVersion } from '@ionic-native/app-version';
 import { FileOpener } from '@ionic-native/file-opener';
 import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
 import { Events, MenuController, Nav, AlertController, NavController} from 'ionic-angular';

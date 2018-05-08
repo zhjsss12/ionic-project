@@ -31,7 +31,7 @@ export class RunPage {
     loader.present();
     setTimeout(() => {
       loader.dismiss();
-    }, 1000);
+    }, 500);
 
     console.log('run.ts  ionViewDidLoad ');
 
@@ -41,7 +41,7 @@ export class RunPage {
     this.dm.databaseInit();
     this.ionChange();
   }
-
+//显示最近七天步数的柱状图
   renderday1(){
     var categoies = [];
     for (var i = 6; i >= 0; i--) {
@@ -51,7 +51,7 @@ export class RunPage {
       var day=date.getDate();
       categoies.push(mon+'\\'+day);
     }
-    console.log(categoies);
+    //console.log(categoies);
     this.chart7 = Highcharts.chart('container7', {
       chart:{
         type:'column'
@@ -60,10 +60,6 @@ export class RunPage {
         text: '最近七天运动数据',
         x: -20
       },
-      // subtitle: {
-      //     text: 'subtitle',
-      //     x: -20
-      // },
       plotOptions: {
         line: {
           dataLabels: {
@@ -85,12 +81,8 @@ export class RunPage {
         }],
         labels: {
           formatter:function(){
-            if(this.value <=5000) {
-              return this.value;
-            }else if(this.value >5000 && this.value <=10000) {
-              return this.value;
-            }else {
-              return this.value;
+            if(this.value >20000) {
+              return "跑神（"+this.value+")";
             }
           }
         }
@@ -106,10 +98,11 @@ export class RunPage {
       },
       series: [{
         name: '步数',
-        data: [5535,5654,451,2124,4579,1249,1547]
+        data: []
       }]
     });
   }
+//显示最近三十天步数的柱状图
   renderday2(){
     var categoies1 = [];
     for (var i = 29; i >= 0; i--) {
@@ -119,7 +112,7 @@ export class RunPage {
       var day1=date1.getDate();
       categoies1.push(mon1+'\\'+day1);
     }
-    console.log(categoies1);
+    //console.log(categoies1);
     this.chart30 = Highcharts.chart('container30', {
       chart:{
         type:'column'
@@ -174,12 +167,12 @@ export class RunPage {
       },
       series: [{
         name: '步数',
-        data: [5535,5654,451,2124,4579,1249,1547,5535,5654,451,2124,4579,1249,1547,5535,5654,451,2124,4579,1249,1547,5535,5654,451,2124,4579,1249,1547,4554,7777]
+        data: []
       }]
     });
   }
   ionChange(){
-    console.log("current page " +this.segment);
+    //console.log("current page " +this.segment);
     var self = this;
     if(this.segment== "7day"){
       var cnt=0;
@@ -188,12 +181,12 @@ export class RunPage {
         var obj = document.getElementById("container7");
         if (obj||cnt>30){
           clearInterval(time);
-          console.log("find 7day");
+          //console.log("find 7day");
           self.renderday1();
           self.change7();
         }
         else{
-          console.log("no find 7day");
+          //console.log("no find 7day");
         }
       },10);
     }
@@ -203,12 +196,12 @@ export class RunPage {
         var obj = document.getElementById("container30");
         if (obj||cnt>30){
           clearInterval(time);
-          console.log("find 30day");
+          //console.log("find 30day");
           self.renderday2();
           self.change30();
         }
         else{
-          console.log("no find 30day");
+          //console.log("no find 30day");
         }
         cnt++;
       },10);
@@ -227,14 +220,14 @@ export class RunPage {
         categories1.push(day1.toString());
       }
     }
-    console.log(categories1);
+    //console.log(categories1);
 
     this.dm.queryLastAse(7,['HH','II'],"0").then(
       (resultSet)=>{
-        console.log("run.ts resultSet \n");
-        console.log('length ' + resultSet.rows.length);
+        //console.log("run.ts resultSet \n");
+        //console.log('length ' + resultSet.rows.length);
         for ( var i=0 ; i<resultSet.rows.length;i++) {
-            console.log(' for loop i = ', i);
+            //console.log(' for loop i = ', i);
             var x= resultSet.rows.item(i);
             var listAtr=[];
             var listData=[];
@@ -242,10 +235,10 @@ export class RunPage {
               listAtr.push(j);
               listData.push(x[j]);
             }
-            console.log(listAtr);
-            console.log(listData);
+            //console.log(listAtr);
+            //console.log(listData);
         }
-        console.log("run.ts resultSet.length \n" + resultSet.rows.length);
+        //console.log("run.ts resultSet.length \n" + resultSet.rows.length);
 
         var run_data : number[] =[0,0,0,0,0,0,0];
 
@@ -260,24 +253,12 @@ export class RunPage {
             }
           }
         }
-        var cnt=0;
-        var sum=0;
-        for (var i = 0; i < 7; i++) {
-          if (run_data[i]>0) {
-            cnt++;
-            sum+=run_data[i];
-          }
-        }
-        if (cnt>0) {
-          this.average7= Math.round(sum/cnt);
-        }
-        else this.average7= 0;
-        this.sum7=sum;
         console.log("run.ts run_data7 \n" + run_data)
+
         this.chart7.series[0].update({
           name: '步数',
           data:run_data});
-        this.chart7.redraw();
+        // this.chart7.redraw();
       }
     );
   }
@@ -304,17 +285,17 @@ export class RunPage {
       }
       categories.push(tmp);
     }
-    console.log(categories);
+    //console.log(categories);
     this.dm.queryLastAse(30,['HH','II'],"0").then(
       (resultSet)=>{
 
-        console.log("run.ts resultSet.length \n" + resultSet.rows.length);
+        //console.log("run.ts resultSet.length \n" + resultSet.rows.length);
         var run_data : number[] =[];
         for (var i = 0; i < 30; ++i) {
           run_data.push(0);
         }
         for (var i=0 ; i<resultSet.rows.length;i++) {
-          console.log(categories);
+          //console.log(categories);
           var x= resultSet.rows.item(i);
           for (var j in categories) {
             // console.log(categories[j] +"   "+ x["datee"].substring(5,10));
@@ -323,24 +304,35 @@ export class RunPage {
             }
           }
         }
-        var cnt=0;
-        var sum=0;
+        var cnt30=0;
+        var sum30=0;
+        var cnt7=0;
+        var sum7=0;
         for (var i = 0; i < 30; i++) {
           if (run_data[i]>0) {
-            cnt++;
-            sum+=run_data[i];
+            cnt30++;
+            sum30+=run_data[i];
+            if (i>22) {
+              cnt7++;
+              sum7+=run_data[i];
+            }
           }
         }
-        if (cnt>0) {
-          this.average30= Math.round(sum/cnt);
+        if (cnt30>0) {
+          this.average30= Math.round(sum30/cnt30);
         }
         else this.average30= 0;
-        this.sum30 = sum;
-        console.log("run.ts run_data30 \n" + run_data)
+        this.sum30 = sum30;
+        if (cnt7>0) {
+          this.average7= Math.round(sum7/cnt7);
+        }
+        else this.average7= 0;
+        this.sum7 = sum7;
+        //console.log("run.ts run_data30 \n" + run_data)
         this.chart30.series[0].update({
           name: '步数',
           data:run_data});
-        this.chart30.redraw();
+        // this.chart30.redraw();
       }
     );
     // this.dm.query();
@@ -356,9 +348,9 @@ export class RunPage {
       dc.setData(str1);
       dc.setId(index.toString());
       this.dm.insert(dc).then((result)=>{
-        console.log(result);
+        //console.log(result);
       },(err)=>{
-        console.log(err);
+        //console.log(err);
       });
       index++;
     }
@@ -366,7 +358,7 @@ export class RunPage {
   query2(){
     this.dm.queryDataFull(-1).then(
       (answer)=>{
-        console.log(answer);
+        //console.log(answer);
       }
     );
   }

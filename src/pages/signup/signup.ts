@@ -10,6 +10,7 @@ import { UserOptions } from '../../interfaces/user-options';
 import { TabsPage } from '../tabs-page/tabs-page';
 
 import { HTTP } from '@ionic-native/http';
+import {Keyboard} from '@ionic-native/keyboard';
 
 @Component({
   selector: 'page-user',
@@ -19,11 +20,13 @@ export class SignupPage {
   signup: UserOptions = { op: '2', name: '', password: '' };
   submitted = false;
 
-  constructor(public navCtrl: NavController, public userData: UserData, private http: HTTP, public menu: MenuController) {}
+  constructor(public navCtrl: NavController,
+              public keyboard: Keyboard,
+               public userData: UserData, private http: HTTP, public menu: MenuController) {}
 
   onSignup(form: NgForm) {
     this.submitted = true;
-    let body = this.signup;
+    let body = JSON.stringify(this.signup);
     if (form.valid) {
       this.http.post('http://120.26.131.179:80/login', {body}, {}).then(data => {
 
@@ -32,7 +35,7 @@ export class SignupPage {
       //alert(data.headers);
 	  if(data.data == '2'){
       this.userData.signup(this.signup.name);
-      
+      this.keyboard.close();
       this.navCtrl.setRoot(TabsPage);
 	  }else{
         this.signup.name = '';

@@ -1,4 +1,4 @@
-<ion-header>
+﻿<ion-header>
   <ion-navbar color="primary">
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
@@ -36,7 +36,7 @@
     <ion-item *ngFor="let user of users">
         <ion-badge item-start [color]='user.color'>{{ user.rank }}</ion-badge>
         <span>{{ user.name }}</span>
-        <ion-badge item-end clear>{{ user.sleep }}</ion-badge>
+        <ion-badge item-end clear [color]="user.color">{{ user.sleep }}</ion-badge>
     </ion-item>
   </ion-list>
 
@@ -44,7 +44,7 @@
     <ion-item *ngFor="let user of users">
         <ion-badge item-start [color]='user.color'>{{ user.rank }}</ion-badge>
         <span>{{ user.name }}</span>
-        <ion-badge item-end clear>{{ user.mood }}</ion-badge>
+        <ion-badge item-end clear [color]="user.color">{{ user.mood }}</ion-badge>
     </ion-item>
   </ion-list>
 </div>

@@ -16,8 +16,8 @@ export class databaseManager {
 //数据库初始化类，如果没有创建过这个表格，就重新创建一次。
   databaseInit(){
     this.userData.getUsername().then((userName) => {
-      console.log('用户名');
-      console.log(userName+'.db');
+      //console.log('用户名');
+      //console.log(userName+'.db');
       this.sqlite.create({
         name: userName+'.db',
         location: 'default'
@@ -38,7 +38,7 @@ export class databaseManager {
       for (var i = 0; i < dc.data.length; i ++) {
         list.push(+dc.data[i]);
       }
-      console.log(list);
+      //console.log(list);
       var date='20'+list[1]+'-';
       if (list[2]<10) {
         date=date+'0'+list[2];
@@ -86,9 +86,9 @@ export class databaseManager {
     this.myAppDatabase.executeSql('select * from sports ',[])
       .then(
           (resultSet) => {
-            console.log(typeof resultSet);
+            //console.log(typeof resultSet);
             for ( var i=0 ; i<resultSet.rows.length;i++) {
-                console.log(' for loop i = ', i);
+                //console.log(' for loop i = ', i);
                 var x= resultSet.rows.item(i);
                 var listAtr=[];
                 var listData=[];
@@ -96,14 +96,14 @@ export class databaseManager {
                   listAtr.push(j);
                   listData.push(x[j]);
                 }
-                console.log(listAtr);
-                console.log(listData);
+                //console.log(listAtr);
+                //console.log(listData);
             }
-            console.log(resultSet);
+            //console.log(resultSet);
             resolve(resultSet);
           })
       .catch(e =>{
-        console.log(e);
+        //console.log(e);
         reject(e);
       });
   });
@@ -114,7 +114,7 @@ export class databaseManager {
   queryDataFull(num: number) :Promise<number>{
     return new Promise((resolve,reject)=>{
       var sql= "select count(*) from sports where datee = date('now', '"+num+" day') ;";
-      console.log("databaseManager.ts queryDataFull sql : "+sql);
+      //console.log("databaseManager.ts queryDataFull sql : "+sql);
       this.myAppDatabase.executeSql(sql,{})
       .then(
           (resultSet) => {
@@ -151,7 +151,7 @@ export class databaseManager {
   queryLastAse(num: number , aspect:string[], type :string) : Promise<any>{
     var q:string="";
     for (var i in aspect) {
-      console.log(aspect[i])
+      //console.log(aspect[i])
       q=q+" , sum(" +aspect[i]+ ")"
     }
     return new Promise((resolve,reject)=>{
@@ -162,17 +162,17 @@ export class databaseManager {
       else {
         sql= "select datee " +q+" from ( select * from sports where EE != 0 and datee between date('now','-"+num+" day') and date('now') ) group by datee order by datee asc;";
       }
-      console.log("databaseManager.ts queryLastAse sql "+sql);
+      //console.log("databaseManager.ts queryLastAse sql "+sql);
       this.myAppDatabase.executeSql(sql,[])
         .then(
           (resultSet) => {
-            console.log('sql resultSet.length : '+resultSet.rows.length);
+            //console.log('sql resultSet.length : '+resultSet.rows.length);
 
-            console.log(resultSet);
+            //console.log(resultSet);
             resolve(resultSet);
           })
         .catch(e =>{
-          console.log(e);
+          //console.log(e);
           reject(e);
         }
       );
@@ -182,13 +182,13 @@ export class databaseManager {
   querySleep(strYesterday: string, strToday : string): Promise <any>{
     return new Promise((resolve,reject)=>{
       var sql = "select id ,FF,GG,HH,II,JJ,KK,LL,MM from sports where EE != 0 and (id < "+ strToday + "48 and id> " + strYesterday + "47);";
-      console.log("databaseManager.ts sql " + sql);
+      //console.log("databaseManager.ts sql " + sql);
       this.myAppDatabase.executeSql(sql,[])
         .then(
           (resultSet) => {
-          console.log('length ' + resultSet.rows.length);
+          //console.log('length ' + resultSet.rows.length);
           for ( var i=0 ; i<resultSet.rows.length;i++) {
-              console.log(' for loop i = ', i);
+              //console.log(' for loop i = ', i);
               var x= resultSet.rows.item(i);
               var listAtr=[];
               var listData=[];
@@ -196,14 +196,14 @@ export class databaseManager {
                 listAtr.push(j);
                 listData.push(x[j]);
               }
-              console.log(listAtr);
-              console.log(listData);
+              //console.log(listAtr);
+              //console.log(listData);
           }
-            console.log('sql resultSet.length : '+resultSet.rows.length);
+            //console.log('sql resultSet.length : '+resultSet.rows.length);
             resolve(resultSet);
           })
         .catch(e =>{
-          console.log(e);
+          //console.log(e);
           reject(e);
         }
       );

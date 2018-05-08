@@ -18,7 +18,7 @@ export class SessionDetailPage {
   ionViewWillEnter() {
 
     // this.dataProvider.load().subscribe((data: any) => {
-      console.log(this.navParams.data.name);
+      console.log("跳进来的时候发的东西",this.navParams.data.name);
       // if (
       //   data &&
       //   data.schedule &&
